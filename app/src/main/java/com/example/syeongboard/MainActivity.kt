@@ -10,6 +10,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.example.syeongboard.compose.AppNavigator
 import com.example.syeongboard.ui.theme.SyeongBoardTheme
 import com.example.syeongboard.compose.TestScreen
+import com.example.syeongboard.compose.GoogleSignInButton
 
 class MainActivity : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
@@ -17,8 +18,9 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             SyeongBoardTheme {
-                //TestScreen()
-                AppNavigator()
+                TestScreen()
+                //AppNavigator()
+                //GoogleSignInButton()
             }
         }
     }
@@ -32,3 +34,4 @@ fun MainPreview() {
         AppNavigator()
     }
 }
+

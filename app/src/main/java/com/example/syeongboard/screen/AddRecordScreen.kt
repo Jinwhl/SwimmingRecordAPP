@@ -60,12 +60,6 @@ fun AddRecordScreen(onBack: () -> Unit) {
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
             CenterAlignedTopAppBar(
-                /* TopBar Color Setting
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer,
-                    titleContentColor = MaterialTheme.colorScheme.primary,
-                ),
-                */
                 title = {
                     Text(
                         text = "수영 기록 추가하기",

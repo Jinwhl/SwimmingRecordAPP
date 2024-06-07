@@ -36,10 +36,13 @@ fun SwimmingRecordScreen(date: LocalDate, onBack: () -> Unit, onAddRecord: () ->
             .fillMaxSize()
             .padding(16.dp)
     ) {
+        // 1. Go Back Button
         IconButton(onClick = onBack) {
             Icon(Icons.Default.ArrowBack, contentDescription = "Back")
         }
         Spacer(modifier = Modifier.height(8.dp))
+
+        // 2. Current Date
         Text(
             text = "${date.year}년 ${date.monthValue}월 ${date.dayOfMonth}일",
             fontSize = 24.sp,
@@ -47,10 +50,16 @@ fun SwimmingRecordScreen(date: LocalDate, onBack: () -> Unit, onAddRecord: () ->
             modifier = Modifier.align(Alignment.CenterHorizontally)
         )
         Spacer(modifier = Modifier.height(8.dp))
+
+        // 3. Mon ~ Sun
         WeekDaysRow()
         Spacer(modifier = Modifier.height(16.dp))
+
+        // TODO : BOXes
+
+        val userID = "Jinwon"
         Text(
-            text = "jinwhl의 수영 아카이빙",
+            text = "${userID}의 수영 아카이빙",
             fontSize = 18.sp,
             fontWeight = FontWeight.Bold
         )
@@ -94,11 +103,6 @@ fun SwimmingRecordScreen(date: LocalDate, onBack: () -> Unit, onAddRecord: () ->
                         fontSize = 16.sp,
                         color = Color.Gray
                     )
-                    Text(
-                        text = "활동 칼로리",
-                        fontSize = 16.sp,
-                        color = Color.Gray
-                    )
                 }
                 Spacer(modifier = Modifier.height(4.dp))
                 Row(
@@ -112,11 +116,6 @@ fun SwimmingRecordScreen(date: LocalDate, onBack: () -> Unit, onAddRecord: () ->
                     )
                     Text(
                         text = "-/100 m",
-                        fontSize = 16.sp,
-                        color = Color.Gray
-                    )
-                    Text(
-                        text = "- kcal",
                         fontSize = 16.sp,
                         color = Color.Gray
                     )

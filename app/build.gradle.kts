@@ -1,3 +1,6 @@
+import java.io.FileInputStream
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
@@ -9,12 +12,18 @@ android {
     namespace = "com.example.syeongboard"
     compileSdk = 34
 
+    val localProperties = Properties()
+    localProperties.load(FileInputStream(rootProject.file("key.properties")))
+
     defaultConfig {
         applicationId = "com.example.syeongboard"
         minSdk = 24
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
+
+        buildConfigField("String", "mySupabaseURL", localProperties.getProperty("SUPABASE_URL"))
+        buildConfigField("String", "mySupabaseAnonKey", localProperties.getProperty("SUPABASE_ANON_KEY"))
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -40,6 +49,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.1"
@@ -52,7 +62,6 @@ android {
 }
 
 dependencies {
-
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -74,4 +83,7 @@ dependencies {
     implementation(platform(libs.supabase.bom))
     implementation(libs.supabase.postgrest)
     implementation(libs.ktor.client)
+
+    implementation("androidx.credentials:credentials:1.2.2")
+    implementation ("com.google.android.libraries.identity.googleid:googleid:1.1.0")
 }
