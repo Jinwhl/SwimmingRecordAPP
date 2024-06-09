@@ -3,6 +3,7 @@ package com.example.syeongboard.compose
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -15,6 +16,7 @@ import java.time.LocalDate
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+
 
 class SwimmingRecordViewModel : ViewModel() {
     private val _startTimeMap = MutableLiveData<Map<LocalDate, Pair<Int, Int>>>(emptyMap())

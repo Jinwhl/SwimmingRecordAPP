@@ -42,7 +42,6 @@ import com.example.syeongboard.compose.CalendarGrid
 import com.example.syeongboard.compose.WeekDaysRow
 import java.time.LocalDate
 import java.time.YearMonth
-
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun CalendarScreen(onDateSelected: (LocalDate) -> Unit, onShowSettings: () -> Unit) {
@@ -117,7 +116,7 @@ fun DayCell(day: String, isToday: Boolean, isClickable: Boolean, onClick: (() ->
             modifier = Modifier
                 .aspectRatio(1f)
                 .clip(RoundedCornerShape(8.dp))
-                .background(if (isToday) Color.Gray else Color.LightGray)
+                .background(if (isToday) myBlueColor else mySkyColor)
                 .clickable(enabled = isClickable && onClick != null) {
                     onClick?.invoke()
                 },
@@ -153,9 +152,10 @@ fun CalendarHeader(
         }
     }
 
+    val userId = "Jinwon"
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Text(
-            text = "이번 달 jinwhl의 수영 기록",
+            text = "이번 달 $userId 의 수영 기록",
             fontSize = 18.sp,
             fontWeight = FontWeight.Bold
         )

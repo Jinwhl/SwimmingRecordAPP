@@ -88,9 +88,7 @@ fun SwimmingRecordScreen(
             // Section 3 : Title
             val userID = "Jinwon"
             Text(
-                text = "${userID}의 수영 아카이빙",
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold
+                text = "${userID}의 수영 아카이빙", fontSize = 18.sp, fontWeight = FontWeight.Bold
             )
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -102,16 +100,13 @@ fun SwimmingRecordScreen(
                     .background(Color.LightGray)
             ) {
                 Column(
-                    modifier = Modifier
-                        .padding(16.dp),
+                    modifier = Modifier.padding(16.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     // Section 4-1 : Show Current Date
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        text = date.toString(),
-                        fontSize = 18.sp,
-                        color = Color.Gray
+                        text = date.toString(), fontSize = 18.sp, color = Color.Gray
                     )
 
                     // Section 4-2 : Distances of Each Stroke
@@ -120,21 +115,31 @@ fun SwimmingRecordScreen(
                     val distance = distances[date] ?: emptyMap()
                     if (distance.isNotEmpty()) {
                         Text("수영 거리", fontWeight = FontWeight.Bold)
-                        distance.forEach { (stroke, dist) ->
-                            Text("$stroke: $dist m")
-                        }
+                        distance.forEach { (stroke, dist) -> Text("$stroke: $dist m") }
                     } else {
                         Text("수영 거리 정보 없음")
                     }
 
                     // Section 4-3 : Total Distance
-                    //TODO
+                    Spacer(modifier = Modifier.height(8.dp))
+                    val totalDistance = distance.values.sum()
+                    Text("총 수영 거리", fontWeight = FontWeight.Bold)
+                    Text("$totalDistance m")
 
                     // Section 4-4 : Swimming Time
                     val startTimeMap by viewModel.startTimeMap.observeAsState()
                     val endTimeMap by viewModel.endTimeMap.observeAsState()
                     val startTime = startTimeMap?.get(date)
                     val endTime = endTimeMap?.get(date)
+                    val totalSwimTime = if (startTime != null && endTime != null) {
+                        val (startHour, startMin) = startTime
+                        val (endHour, endMin) = endTime
+                        val startTotalMinutes = startHour * 60 + startMin
+                        val endTotalMinutes = endHour * 60 + endMin
+                        endTotalMinutes - startTotalMinutes
+                    } else {
+                        null
+                    }
                     Row(
                         horizontalArrangement = Arrangement.Center,
                         modifier = Modifier.fillMaxWidth()
@@ -150,15 +155,6 @@ fun SwimmingRecordScreen(
                                     convertTimeToString(endHour, endMin)
                                 } ?: "종료 시간 미설정",
                             )
-                            val totalSwimTime = if (startTime != null && endTime != null) {
-                                val (startHour, startMin) = startTime
-                                val (endHour, endMin) = endTime
-                                val startTotalMinutes = startHour * 60 + startMin
-                                val endTotalMinutes = endHour * 60 + endMin
-                                endTotalMinutes - startTotalMinutes
-                            } else {
-                                null
-                            }
 
                             if (totalSwimTime != null && totalSwimTime >= 0) {
                                 val hours = totalSwimTime / 60
@@ -173,16 +169,27 @@ fun SwimmingRecordScreen(
                             }
                         }
                     }
-                    // Section 4-5 : 평균 페이스
-                    // TODO
+                    // Section 4-5 : Average Pace
+                    if (totalSwimTime != null && totalSwimTime > 0 && totalDistance > 0) {
+                        val totalSwimTimeInSeconds = totalSwimTime * 60
+                        val pacePer100m = (totalSwimTimeInSeconds / (totalDistance / 100.0)).toInt()
+                        val paceMinutes = pacePer100m / 60
+                        val paceSeconds = pacePer100m % 60
+                        Text(
+                            text = "평균 페이스 : ${paceMinutes}분${paceSeconds}초 / 100m"
+                        )
+                    } else {
+                        Text(
+                            text = "평균 페이스 정보 없음"
+                        )
+                    }
                 }
             }
 
             // Section 6 : Start Record Button
             Spacer(modifier = Modifier.height(16.dp))
             Button(
-                onClick = { onAddRecord(date) },
-                modifier = Modifier.fillMaxWidth()
+                onClick = { onAddRecord(date) }, modifier = Modifier.fillMaxWidth()
             ) {
                 Text(text = "수영 기록 추가하기")
             }
