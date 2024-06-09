@@ -23,7 +23,6 @@ class MainActivity : ComponentActivity() {
                 //TestScreen()
                 AppNavigator()
                 //GoogleSignInButton()
-                //SearchDataOf(date = "2024-06-04")
             }
         }
     }

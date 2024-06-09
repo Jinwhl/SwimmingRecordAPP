@@ -45,7 +45,7 @@ fun SwimmingRecordScreen(date: LocalDate, onBack: () -> Unit, onAddRecord: (Loca
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        // 1. Go Back Button
+        // 1. Undo Button
         IconButton(onClick = onBack) { Icon(Icons.Default.ArrowBack, contentDescription = "Back") }
         Spacer(modifier = Modifier.height(8.dp))
 
@@ -136,7 +136,5 @@ fun SwimmingRecordScreen(date: LocalDate, onBack: () -> Unit, onAddRecord: (Loca
         ) {
             Text(text = "수영 기록 추가하기")
         }
-
-        // "${date.year}년 ${date.monthValue}월 ${date.dayOfMonth}일" 값 넘겨주기. 데이터베이스 저장용
     }
 }

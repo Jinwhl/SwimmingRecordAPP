@@ -1,7 +1,5 @@
 package com.example.syeongboard.screen
 
-import android.app.TimePickerDialog
-import android.widget.TimePicker
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -13,21 +11,16 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
-import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBarDefaults
@@ -41,14 +34,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Dialog
+import com.example.syeongboard.compose.StrokeDistanceDialog
+import com.example.syeongboard.compose.TimePicker
 import java.time.LocalDate
-import java.util.Calendar
+
 
 val myBlueColor = Color(0xFF3382F5)
 val mySkyColor = Color(0xFFB4CDFB)
@@ -85,12 +77,12 @@ fun AddRecordScreen(date: LocalDate, onBack: () -> Unit) {
                 .padding(16.dp)
                 .verticalScroll(rememberScrollState())
         ) {
-            // Section 1 : Record Date
+            // Section 1 : Show Date
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(text = "수영 날짜*", fontSize = 16.sp, color = Color.Gray)
                 Spacer(modifier = Modifier.weight(1f))
                 Button(
-                    onClick = { /*TODO*/ },
+                    onClick = { },
                     colors = ButtonDefaults.buttonColors(mySkyColor),
                     shape = RoundedCornerShape(8.dp),
                 ) {
@@ -98,15 +90,16 @@ fun AddRecordScreen(date: LocalDate, onBack: () -> Unit) {
                 }
             }
 
-            // Color(0xFF3382F5)
-            // Section 2 : Swimming Start & End Time
+            // Section 2 : Record Swimming Start & End Time
+            var isTimeSelected by remember { mutableStateOf(false) }
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(text = "수영 시간*", fontSize = 16.sp, color = Color.Gray)
                 Spacer(modifier = Modifier.weight(1f))
-                TimePicker()
+                TimePicker(onTimeSet = { enabled -> isTimeSelected = enabled })
             }
 
-            // Section 3 : Choose Pool Lane Length
+            // Section : Choose Pool Lane Length
+            /*
             Spacer(modifier = Modifier.height(8.dp))
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(text = "레인 길이*", fontSize = 16.sp, color = Color.Gray)
@@ -130,8 +123,11 @@ fun AddRecordScreen(date: LocalDate, onBack: () -> Unit) {
                     Text(text = "50m", color = Color.White)
                 }
             }
+             */
 
 
+            // Section 3 : Record Swimming Distance
+            var isDistanceSelected by remember { mutableStateOf(false) }
             Spacer(modifier = Modifier.height(8.dp))
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(text = "수영 거리* (m)", fontSize = 16.sp, color = Color.Gray)
@@ -142,6 +138,7 @@ fun AddRecordScreen(date: LocalDate, onBack: () -> Unit) {
                         onDismissRequest = { showDialog = false },
                         onConfirmation = { /* 적용하기 로직 추가 */ showDialog = false },
                         dialogTitle = "거리 입력",
+                        onDistanceSet = {enabled -> isDistanceSelected = enabled}
                     )
                 }
                 Button(
@@ -179,164 +176,20 @@ fun AddRecordScreen(date: LocalDate, onBack: () -> Unit) {
                     .background(Color.LightGray)
             )
 
+            val isButtonEnabled = isTimeSelected && isDistanceSelected
             Spacer(modifier = Modifier.height(16.dp))
             Button(
                 onClick = { /* 저장 로직 */ },
-                colors = ButtonDefaults.buttonColors(myBlueColor),
+                colors = ButtonDefaults.buttonColors(if (isButtonEnabled) myBlueColor else mySkyColor),
+                enabled = isButtonEnabled,
                 shape = RoundedCornerShape(8.dp),
                 modifier = Modifier
                     .width(168.dp)
                     .height(56.dp)
-                    .align(Alignment.CenterHorizontally)
+                    .align(Alignment.CenterHorizontally),
             ) {
                 Text(text = "저장하기", fontSize = 20.sp, fontWeight = FontWeight.Bold)
             }
         }
     }
-}
-
-@Composable
-fun StrokeDistanceDialog(
-    onDismissRequest: () -> Unit,
-    onConfirmation: () -> Unit,
-    dialogTitle: String,
-) {
-    Dialog(onDismissRequest = onDismissRequest) {
-        Surface(
-            shape = RoundedCornerShape(16.dp),
-            color = Color.White,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-        ) {
-            Column(modifier = Modifier.padding(16.dp)) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(dialogTitle, fontSize = 20.sp, modifier = Modifier.weight(1f))
-                    IconButton(onClick = onDismissRequest) {
-                        Icon(Icons.Filled.Close, contentDescription = "뒤로 가기")
-                    }
-                }
-                Divider(color = Color.LightGray, thickness = 1.dp)
-                Spacer(modifier = Modifier.height(16.dp))
-
-                DistanceInputRow(label = "접영")
-                DistanceInputRow(label = "배영")
-                DistanceInputRow(label = "평영")
-                DistanceInputRow(label = "자유형")
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                Button(
-                    onClick = onConfirmation,
-                    colors = ButtonDefaults.buttonColors(myBlueColor),
-                    shape = RoundedCornerShape(8.dp),
-                    modifier = Modifier.fillMaxWidth(),
-                ) {
-                    Text("적용하기")
-                }
-            }
-        }
-    }
-}
-@Composable
-fun DistanceInputRow(label: String) {
-    var value by remember { mutableStateOf("") }
-
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.padding(vertical = 4.dp)
-    ) {
-        Text(text = label, modifier = Modifier.width(60.dp))
-        BasicTextField(
-            value = value,
-            onValueChange = { value = it },
-            modifier = Modifier
-                .weight(1f)
-                .padding(horizontal = 8.dp)
-                .background(Color.LightGray, shape = RoundedCornerShape(8.dp))
-                .padding(8.dp),
-            singleLine = true,
-            // Only Number Keyboard Available
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
-        )
-        Text(text = "m", modifier = Modifier.width(24.dp))
-    }
-}
-@Composable
-private fun TimePicker() {
-    var startHour by remember { mutableStateOf(-1) }
-    var startMin by remember { mutableStateOf(-1) }
-    var endHour by remember { mutableStateOf(-1) }
-    var endMin by remember { mutableStateOf(-1) }
-    val context = LocalContext.current
-
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.padding(16.dp)
-    ) {
-        Button(
-            onClick = {
-                showTimePicker(context) { hour, minute ->
-                    startHour = hour
-                    startMin = minute
-                }
-            },
-            colors = ButtonDefaults.buttonColors(myBlueColor),
-            shape = RoundedCornerShape(8.dp),
-            modifier = Modifier.weight(1f)
-        ) {
-            when {
-                startHour > 0 -> Text(text = convertTimeToString(startHour, startMin))
-                else -> Text(text = "시작 시간")
-            }
-        }
-
-        Text(
-            text = "~",
-            fontSize = 16.sp,
-            modifier = Modifier
-                .align(Alignment.CenterVertically)
-                .padding(horizontal = 8.dp)
-        )
-
-        Button(
-            onClick = {
-                showTimePicker(context) { hour, minute ->
-                    endHour = hour
-                    endMin = minute
-                }
-            },
-            colors = ButtonDefaults.buttonColors(myBlueColor),
-            shape = RoundedCornerShape(8.dp),
-            modifier = Modifier.weight(1f)
-        ) {
-            when {
-                endHour > 0 -> Text(text = convertTimeToString(endHour, endMin))
-                else -> Text(text = "종료 시간")
-            }
-        }
-    }
-}
-private fun convertTimeToString(hour: Int, minute: Int): String {
-    return String.format(
-        "%02d:%02d %s",
-        if (hour % 12 == 0) 12 else hour % 12,
-        minute,
-        if (hour < 12) "AM" else "PM"
-    )
-}
-private fun showTimePicker(context: android.content.Context, onTimeSelected: (Int, Int) -> Unit) {
-    val calendar = Calendar.getInstance()
-    val hour = calendar.get(Calendar.HOUR_OF_DAY)
-    val minute = calendar.get(Calendar.MINUTE)
-
-    TimePickerDialog(
-        context,
-        { _: TimePicker, selectedHour: Int, selectedMinute: Int ->
-            onTimeSelected(selectedHour, selectedMinute)
-        },
-        hour,
-        minute,
-        false  // 12시간 형식
-    ).show()
 }
