@@ -11,6 +11,8 @@ import com.example.syeongboard.compose.AppNavigator
 import com.example.syeongboard.ui.theme.SyeongBoardTheme
 import com.example.syeongboard.compose.TestScreen
 import com.example.syeongboard.compose.GoogleSignInButton
+import com.example.syeongboard.compose.SearchDataOf
+
 
 class MainActivity : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
@@ -18,9 +20,10 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             SyeongBoardTheme {
-                TestScreen()
-                //AppNavigator()
+                //TestScreen()
+                AppNavigator()
                 //GoogleSignInButton()
+                //SearchDataOf(date = "2024-06-04")
             }
         }
     }

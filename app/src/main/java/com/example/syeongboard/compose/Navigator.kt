@@ -2,7 +2,6 @@ package com.example.syeongboard.compose
 
 import android.os.Build
 import androidx.annotation.RequiresApi
-import androidx.compose.material3.Button
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -29,10 +28,15 @@ fun AppNavigator() {
         }
         composable("swimmingRecord/{date}") { backStackEntry ->
             val date = LocalDate.parse(backStackEntry.arguments?.getString("date"))
-            SwimmingRecordScreen(date = date, onBack = { navController.popBackStack() }, onAddRecord = { navController.navigate("addRecord") })
+            SwimmingRecordScreen(
+                date = date,
+                onBack = { navController.popBackStack() },
+                onAddRecord = { navController.navigate("addRecord/${date.toString()}") } // 경로에 date 추가
+            )
         }
-        composable("addRecord") {
-            AddRecordScreen(onBack = { navController.popBackStack() })
+        composable("addRecord/{date}") { backStackEntry ->
+            val date = LocalDate.parse(backStackEntry.arguments?.getString("date"))
+            AddRecordScreen(date = date, onBack = { navController.popBackStack() })
         }
     }
 }

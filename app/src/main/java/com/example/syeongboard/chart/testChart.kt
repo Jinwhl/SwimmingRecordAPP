@@ -73,12 +73,12 @@ fun BarChart(
 fun PreviewBarChart() {
     val sampleData = listOf(
         "접" to 400f,
-        "배" to 0f,
+        "배" to 100f,
         "평" to 400f,
         "자" to 200f,
     )
     val colors = listOf(
-        Color(0xFF4382F5), // Blue
+        Color(0xFF3382F5), // Blue
         Color(0xFFB4CDFB), // Light Blue
         Color(0xFFFFA900), // Orange
         Color(0xFF22D081), // Green

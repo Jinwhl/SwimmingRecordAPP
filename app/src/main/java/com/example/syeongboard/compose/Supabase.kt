@@ -8,8 +8,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
@@ -51,33 +49,8 @@ fun TestScreen() {
         Column {
             Spacer(modifier = Modifier.height(24.dp))
             InsertData()
-            //ShowData()
-
             //val localDate: LocalDate = LocalDate.now()
             //SearchDataOf(date = localDate.toString())
-        }
-    }
-}
-
-@Composable
-fun ShowData() {
-    var records by remember { mutableStateOf<List<SwimRecords>>(listOf()) }
-
-    LaunchedEffect(Unit) {
-        withContext(Dispatchers.IO) {
-            records = supabase.from("SwimRecords").select().decodeList<SwimRecords>()
-        }
-    }
-    LazyColumn {
-        items(records, key = { it.id ?: 0 }) { record ->
-            Column {
-                Text(text = "Start Time: ${record.startTime}")
-                Text(text = "End Time: ${record.endTime}")
-                Text(text = "접영 거리 : ${record.butterflyDistance}")
-                Text(text = "배영 거리 : ${record.backstrokeDistance}")
-                Text(text = "평영 거리 : ${record.breaststrokeDistance}")
-                Text(text = "자유형 거리 : ${record.freestyleDistance}")
-            }
         }
     }
 }
@@ -109,35 +82,29 @@ fun InsertData() {
 
     fun addDataToSupabase() {
         scope.launch {
-//            try {
-                withContext(Dispatchers.IO) {
-                    supabase.from("SwimRecords").insert(
-                        SwimRecords(
-                            swimDate = inputSwimDate,
-                            startTime = inputStartTime,
-                            endTime = inputEndTime,
+            withContext(Dispatchers.IO) {
+                supabase.from("SwimRecords").insert(
+                    SwimRecords(
+                        swimDate = inputSwimDate,
+                        startTime = inputStartTime,
+                        endTime = inputEndTime,
 
-                            butterflyDistance = inputButterflyDistance ?: 0,
-                            backstrokeDistance = inputBackstrokeDistance ?: 0,
-                            breaststrokeDistance = inputBreaststrokeDistance ?: 0,
-                            freestyleDistance = inputFreestyleDistance ?: 0,
-                        )
+                        butterflyDistance = inputButterflyDistance ?: 0,
+                        backstrokeDistance = inputBackstrokeDistance ?: 0,
+                        breaststrokeDistance = inputBreaststrokeDistance ?: 0,
+                        freestyleDistance = inputFreestyleDistance ?: 0,
                     )
-                }
-                // Clear the input fields after insertion
-                inputSwimDate = ""
-                inputStartTime = ""
-                inputEndTime = ""
+                )
+            }
+            // Clear the input fields after insertion
+            inputSwimDate = ""
+            inputStartTime = ""
+            inputEndTime = ""
 
-                inputButterflyDistance = 0
-                inputBackstrokeDistance = 0
-                inputBreaststrokeDistance = 0
-                inputFreestyleDistance = 0
-//            }
-//            // Handle the exception (show error message, log it, etc.)
-//            catch (e: Exception) {
-//                e.printStackTrace()
-//            }
+            inputButterflyDistance = 0
+            inputBackstrokeDistance = 0
+            inputBreaststrokeDistance = 0
+            inputFreestyleDistance = 0
         }
     }
 
@@ -202,77 +169,6 @@ fun InsertData() {
 }
 
 @Composable
-fun InsertDataNew() {
-    var inputSwimDate by remember { mutableStateOf("") }
-    var inputStartTime by remember { mutableStateOf("") }
-    var inputEndTime by remember { mutableStateOf("") }
-
-    val inputButterflyDistance = remember { mutableStateOf<Int?>(null) }
-    val inputBackstrokeDistance = remember { mutableStateOf<Int?>(null) }
-    val inputBreaststrokeDistance = remember { mutableStateOf<Int?>(null) }
-    val inputFreestyleDistance = remember { mutableStateOf<Int?>(null) }
-
-    Column(
-        modifier = Modifier
-            .padding(16.dp)
-            .fillMaxWidth()
-    ) {
-        TextField(
-            value = inputStartTime,
-            onValueChange = { inputStartTime = it },
-            label = { Text("Start Time") },
-            modifier = Modifier.fillMaxWidth()
-        )
-        TextField(
-            value = inputEndTime,
-            onValueChange = { inputEndTime = it },
-            label = { Text("End Time") },
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Spacer(modifier = Modifier.height(24.dp))
-        NumberField(inputFreestyleDistance, "접영 거리")
-        NumberField(inputBackstrokeDistance, "배영 거리")
-        NumberField(inputBreaststrokeDistance, "평영 거리")
-        NumberField(inputFreestyleDistance, "자유형 거리")
-
-        val scope = rememberCoroutineScope()
-        Button(
-            onClick = {
-                if (inputStartTime.isNotEmpty() && inputEndTime.isNotEmpty()) {
-                    scope.launch(Dispatchers.IO) {
-                        supabase.from("SwimRecords").insert<SwimRecords>(
-                            SwimRecords(
-                                swimDate = inputSwimDate,
-                                startTime = inputStartTime,
-                                endTime = inputEndTime,
-
-                                butterflyDistance = inputButterflyDistance.value ?: 0,
-                                backstrokeDistance = inputBackstrokeDistance.value ?: 0,
-                                breaststrokeDistance = inputBreaststrokeDistance.value ?: 0,
-                                freestyleDistance = inputFreestyleDistance.value ?: 0,
-                            )
-                        )
-                        // Clear the input fields after insertion
-                        inputSwimDate = ""
-                        inputStartTime = ""
-                        inputEndTime = ""
-
-                        inputButterflyDistance.value = 0
-                        inputBackstrokeDistance.value = 0
-                        inputBreaststrokeDistance.value = 0
-                        inputFreestyleDistance.value = 0
-                    }
-
-                }
-            }, modifier = Modifier.align(Alignment.End)
-        ) {
-            Text("Submit")
-        }
-    }
-}
-
-@Composable
 private fun NumberField(
     value: MutableState<Int?>,
     text: String
@@ -286,11 +182,8 @@ private fun NumberField(
     )
 }
 
-
 @Composable
 fun SearchDataOf(date: String) {
-    // val currentDate = LocalDate.now()
-
     var records by remember { mutableStateOf<SwimRecords?>(null) }
 
     LaunchedEffect(Unit) {
@@ -311,9 +204,4 @@ fun SearchDataOf(date: String) {
             Text(text = "거리: ${it.butterflyDistance}", modifier = Modifier.padding(8.dp))
         }
     }
-}
-
-@Composable
-fun InsertDate() {
-    var inputSwimDate by remember { mutableStateOf("") }
 }
