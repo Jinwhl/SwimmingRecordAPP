@@ -1,4 +1,4 @@
-package com.example.syeongboard.compose
+package com.example.syeongboard.test
 
 import android.util.Log
 import android.widget.Toast
@@ -10,6 +10,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.credentials.CredentialManager
 import androidx.credentials.GetCredentialRequest
 import androidx.credentials.exceptions.GetCredentialException
+import com.example.syeongboard.compose.supabase
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.android.libraries.identity.googleid.GoogleIdTokenParsingException

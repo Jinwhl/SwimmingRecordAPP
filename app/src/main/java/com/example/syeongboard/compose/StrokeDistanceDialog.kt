@@ -39,23 +39,12 @@ fun StrokeDistanceDialog(
     onDismissRequest: () -> Unit,
     onConfirmation: () -> Unit,
     dialogTitle: String,
-    onDistanceSet: (Boolean) -> Unit
+    updateDistances: (String, String, String, String) -> Unit
 ) {
-    // State variables for each stroke distance
-    var butterflyDistance by remember { mutableStateOf("") }
-    var backstrokeDistance by remember { mutableStateOf("") }
-    var breaststrokeDistance by remember { mutableStateOf("") }
-    var freestyleDistance by remember { mutableStateOf("") }
-
-    // Function to check if any distance is greater than 0
-    val isDistanceSelected = listOf(
-        butterflyDistance,
-        backstrokeDistance,
-        breaststrokeDistance,
-        freestyleDistance
-    ).any { (it.toIntOrNull() ?: 0) > 0 }
-
-    onDistanceSet(isDistanceSelected)
+    var butterflyDistance by remember { mutableStateOf("0") }
+    var backstrokeDistance by remember { mutableStateOf("0") }
+    var breaststrokeDistance by remember { mutableStateOf("0") }
+    var freestyleDistance by remember { mutableStateOf("0") }
 
     Dialog(onDismissRequest = onDismissRequest) {
         Surface(
@@ -75,7 +64,6 @@ fun StrokeDistanceDialog(
                 Divider(color = Color.LightGray, thickness = 1.dp)
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Pass the state variables and state update functions to DistanceInputRow
                 DistanceInputRow(label = "접영", value = butterflyDistance) { butterflyDistance = it }
                 DistanceInputRow(label = "배영", value = backstrokeDistance) { backstrokeDistance = it }
                 DistanceInputRow(label = "평영", value = breaststrokeDistance) { breaststrokeDistance = it }
@@ -84,7 +72,10 @@ fun StrokeDistanceDialog(
                 Spacer(modifier = Modifier.height(16.dp))
 
                 Button(
-                    onClick = onConfirmation,
+                    onClick = {
+                        onConfirmation()
+                        updateDistances(butterflyDistance, backstrokeDistance, breaststrokeDistance, freestyleDistance)
+                    },
                     colors = ButtonDefaults.buttonColors(myBlueColor),
                     shape = RoundedCornerShape(8.dp),
                     modifier = Modifier.fillMaxWidth(),
@@ -112,8 +103,7 @@ private fun DistanceInputRow(label: String, value: String, onValueChange: (Strin
                 .background(Color.LightGray, shape = RoundedCornerShape(8.dp))
                 .padding(8.dp),
             singleLine = true,
-            // Only Number Keyboard Available
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number) // Only Number Keyboard Available
         )
         Text(text = "m", modifier = Modifier.width(24.dp))
     }

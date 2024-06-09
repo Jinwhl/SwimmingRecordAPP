@@ -15,6 +15,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -22,7 +23,7 @@ import com.example.syeongboard.screen.myBlueColor
 import java.util.Calendar
 
 @Composable
-fun TimePicker(onTimeSet: (Boolean) -> Unit) {
+fun TimePicker(onTimeSet: (Boolean, Int, Int, Int, Int) -> Unit) {
     val context = LocalContext.current
 
     var startHour by remember { mutableStateOf(-1) }
@@ -32,7 +33,7 @@ fun TimePicker(onTimeSet: (Boolean) -> Unit) {
 
     // When user select time, change to true
     val isTimeSelected = startHour > 0 && endHour > 0
-    onTimeSet(isTimeSelected)
+    onTimeSet(isTimeSelected, startHour, startMin, endHour, endMin)
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -81,7 +82,7 @@ fun TimePicker(onTimeSet: (Boolean) -> Unit) {
         }
     }
 }
-private fun convertTimeToString(hour: Int, minute: Int): String {
+fun convertTimeToString(hour: Int, minute: Int): String {
     return String.format(
         "%02d:%02d %s",
         if (hour % 12 == 0) 12 else hour % 12,
@@ -101,6 +102,6 @@ private fun showTimePicker(context: android.content.Context, onTimeSelected: (In
         },
         hour,
         minute,
-        false  // 12시간 형식
+        false  // 12 hours format
     ).show()
 }

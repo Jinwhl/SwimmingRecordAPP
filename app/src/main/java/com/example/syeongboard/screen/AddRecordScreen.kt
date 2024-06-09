@@ -1,11 +1,9 @@
 package com.example.syeongboard.screen
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -22,11 +20,11 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -41,13 +39,16 @@ import com.example.syeongboard.compose.StrokeDistanceDialog
 import com.example.syeongboard.compose.TimePicker
 import java.time.LocalDate
 
-
 val myBlueColor = Color(0xFF3382F5)
 val mySkyColor = Color(0xFFB4CDFB)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddRecordScreen(date: LocalDate, onBack: () -> Unit) {
+fun AddRecordScreen(
+    date: LocalDate,
+    onBack: () -> Unit,
+    onSave: (Int, Int, Int, Int, Map<String, Int>) -> Unit
+) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
 
     Scaffold(
@@ -77,7 +78,7 @@ fun AddRecordScreen(date: LocalDate, onBack: () -> Unit) {
                 .padding(16.dp)
                 .verticalScroll(rememberScrollState())
         ) {
-            // Section 1 : Show Date
+            // Section 1 : Show Date (Essential Data *)
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(text = "수영 날짜*", fontSize = 16.sp, color = Color.Gray)
                 Spacer(modifier = Modifier.weight(1f))
@@ -90,44 +91,37 @@ fun AddRecordScreen(date: LocalDate, onBack: () -> Unit) {
                 }
             }
 
-            // Section 2 : Record Swimming Start & End Time
+            // Section 2 : Record Swimming Start & End Time (Essential Data *)
             var isTimeSelected by remember { mutableStateOf(false) }
+            var startHour by remember { mutableIntStateOf(0) }
+            var startMin by remember { mutableIntStateOf(0) }
+            var endHour by remember { mutableIntStateOf(0) }
+            var endMin by remember { mutableIntStateOf(0) }
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(text = "수영 시간*", fontSize = 16.sp, color = Color.Gray)
                 Spacer(modifier = Modifier.weight(1f))
-                TimePicker(onTimeSet = { enabled -> isTimeSelected = enabled })
+                TimePicker(onTimeSet = { enabled, inputStartHour, inputStartMin, inputEndHour, inputEndMin ->
+                    isTimeSelected = enabled
+                    startHour = inputStartHour
+                    startMin = inputStartMin
+                    endHour = inputEndHour
+                    endMin = inputEndMin
+                })
             }
 
-            // Section : Choose Pool Lane Length
-            /*
-            Spacer(modifier = Modifier.height(8.dp))
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(text = "레인 길이*", fontSize = 16.sp, color = Color.Gray)
-                Spacer(modifier = Modifier.weight(1f))
-                var poolLaneLength by remember { mutableStateOf("25m") }
-                Button(
-                    onClick = { poolLaneLength = "25m" },
-                    colors = ButtonDefaults.buttonColors(if (poolLaneLength == "25m") myBlueColor else Color.Gray),
-                    shape = RoundedCornerShape(8.dp),
-                    modifier = Modifier.weight(1f)
-                ) {
-                    Text(text = "25m", color = Color.White)
-                }
-                Spacer(modifier = Modifier.width(8.dp))
-                Button(
-                    onClick = { poolLaneLength = "50m" },
-                    colors = ButtonDefaults.buttonColors(if (poolLaneLength == "50m") myBlueColor else Color.Gray),
-                    shape = RoundedCornerShape(8.dp),
-                    modifier = Modifier.weight(1f)
-                ) {
-                    Text(text = "50m", color = Color.White)
-                }
-            }
-             */
-
-
-            // Section 3 : Record Swimming Distance
+            // Section 3 : Record Distances of Each Stroke
             var isDistanceSelected by remember { mutableStateOf(false) }
+            var butterflyDistance by remember { mutableStateOf("0") }
+            var backstrokeDistance by remember { mutableStateOf("0") }
+            var breaststrokeDistance by remember { mutableStateOf("0") }
+            var freestyleDistance by remember { mutableStateOf("0") }
+            fun updateDistances(butterfly: String, backstroke: String, breaststroke: String, freestyle: String) {
+                butterflyDistance = butterfly
+                backstrokeDistance = backstroke
+                breaststrokeDistance = breaststroke
+                freestyleDistance = freestyle
+                isDistanceSelected = listOf(butterfly, backstroke, breaststroke, freestyle).any { (it.toIntOrNull() ?: 0) > 0 }
+            }
             Spacer(modifier = Modifier.height(8.dp))
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(text = "수영 거리* (m)", fontSize = 16.sp, color = Color.Gray)
@@ -136,9 +130,9 @@ fun AddRecordScreen(date: LocalDate, onBack: () -> Unit) {
                 if (showDialog) {
                     StrokeDistanceDialog(
                         onDismissRequest = { showDialog = false },
-                        onConfirmation = { /* 적용하기 로직 추가 */ showDialog = false },
+                        onConfirmation = { showDialog = false },
                         dialogTitle = "거리 입력",
-                        onDistanceSet = {enabled -> isDistanceSelected = enabled}
+                        updateDistances = ::updateDistances
                     )
                 }
                 Button(
@@ -150,36 +144,19 @@ fun AddRecordScreen(date: LocalDate, onBack: () -> Unit) {
                 }
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
-            Text(text = "수영장 추가", fontSize = 16.sp, color = Color.Gray)
-            TextField(
-                value = "",
-                onValueChange = {},
-                placeholder = { Text(text = "수영장 검색", color = Color.Gray) },
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-            Text(text = "수영 일기", fontSize = 16.sp, color = Color.Gray)
-            TextField(
-                value = "",
-                onValueChange = {},
-                placeholder = {
-                    Text(
-                        text = "오늘 수영은 어땠나요?",
-                        color = Color.Gray
-                    )
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(240.dp)
-                    .background(Color.LightGray)
-            )
-
+            // Section 6 : Save Button
             val isButtonEnabled = isTimeSelected && isDistanceSelected
             Spacer(modifier = Modifier.height(16.dp))
             Button(
-                onClick = { /* 저장 로직 */ },
+                onClick = {
+                    val distances = mapOf(
+                        "butterfly" to (butterflyDistance.toIntOrNull() ?: 0),
+                        "backstroke" to (backstrokeDistance.toIntOrNull() ?: 0),
+                        "breaststroke" to (breaststrokeDistance.toIntOrNull() ?: 0),
+                        "freestyle" to (freestyleDistance.toIntOrNull() ?: 0)
+                    )
+                    onSave(startHour, startMin, endHour, endMin, distances)
+                },
                 colors = ButtonDefaults.buttonColors(if (isButtonEnabled) myBlueColor else mySkyColor),
                 enabled = isButtonEnabled,
                 shape = RoundedCornerShape(8.dp),

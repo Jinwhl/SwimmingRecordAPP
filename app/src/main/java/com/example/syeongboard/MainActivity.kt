@@ -9,9 +9,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.syeongboard.compose.AppNavigator
 import com.example.syeongboard.ui.theme.SyeongBoardTheme
-import com.example.syeongboard.compose.TestScreen
-import com.example.syeongboard.compose.GoogleSignInButton
-import com.example.syeongboard.compose.SearchDataOf
 
 
 class MainActivity : ComponentActivity() {
