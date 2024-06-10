@@ -3,20 +3,14 @@ package com.example.syeongboard.screen
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -37,22 +31,19 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.syeongboard.compose.DayCell
+import androidx.navigation.NavController
 import com.example.syeongboard.compose.SupabaseClient
 import com.example.syeongboard.compose.SwimmingRecordViewModel
 import com.example.syeongboard.compose.WeekDaysRow
 import com.example.syeongboard.compose.WeekGrid
-import com.example.syeongboard.test.BarChart
+import com.example.syeongboard.test.StackedBars
 import com.example.syeongboard.utils.MyColor
 import java.time.LocalDate
-import java.time.temporal.TemporalAdjusters
 
 @OptIn(ExperimentalMaterial3Api::class)
 @RequiresApi(Build.VERSION_CODES.O)
@@ -61,7 +52,8 @@ fun SwimmingRecordScreen(
     date: LocalDate,
     onBack: () -> Unit,
     onAddRecord: (LocalDate) -> Unit,
-    viewModel: SwimmingRecordViewModel
+    viewModel: SwimmingRecordViewModel,
+    navController: NavController
 ) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
     Scaffold(
@@ -99,10 +91,12 @@ fun SwimmingRecordScreen(
             WeekGrid(
                 selectedDate = date,
                 today = LocalDate.now(),
-                onDateSelected = { selectedDate -> viewModel.fetchSwimRecordsByDate(selectedDate) },
+                onDateSelected = { selectedDate ->
+                    viewModel.fetchSwimRecordsByDate(selectedDate)
+                    navController.navigate("swimmingRecord/${selectedDate}") // 선택된 날짜로 이동합니다.
+                },
                 filteredSwimRecords = viewModel.swimRecords.value ?: emptyList()
             )
-            Spacer(modifier = Modifier.height(16.dp))
 
             // Section 3 : Title
             val userID = "Jinwon"
@@ -153,10 +147,17 @@ fun RecordInfo(data: SupabaseClient.SwimRecord) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        BarChart(
-            barData = listOf("접" to data.butterflyDistance, "배" to data.backstrokeDistance, "평" to data.breaststrokeDistance, "자" to data.freestyleDistance),
-            colors = listOf(MyColor.Blue, MyColor.SkyBlue, MyColor.Orange, MyColor.Green)
-        )
+        StackedBars(
+                data.butterflyDistance,
+                data.backstrokeDistance,
+                data.breaststrokeDistance,
+                data.freestyleDistance,
+                0.5f, 0, Color.LightGray
+            )
+        Text("${data.butterflyDistance}")
+        Text("${data.backstrokeDistance}")
+        Text("${data.breaststrokeDistance}")
+        Text("${data.freestyleDistance}")
         Text(text = "Start Time >> ${data.startTime}")
         Text(text = "End Time >> ${data.endTime}")
         Text(text = "Pool >> ${data.poolName}")

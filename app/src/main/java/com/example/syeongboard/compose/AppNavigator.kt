@@ -63,8 +63,11 @@ class SwimmingRecordViewModel : ViewModel() {
         viewModelScope.launch {
             val record = SupabaseClient.getSwimRecordByDate(date.toString())
             val currentMap = _swimRecordsByDate.value!!.toMutableMap()
-            if (record != null) { currentMap[date] = listOf(record) }
-            else { currentMap[date] = emptyList() }
+            if (record != null) {
+                currentMap[date] = listOf(record)
+            } else {
+                currentMap[date] = emptyList()
+            }
             _swimRecordsByDate.postValue(currentMap)
         }
     }
@@ -120,13 +123,18 @@ fun AppNavigator() {
         composable("settings") {
             SettingsScreen(onClose = { navController.popBackStack() })
         }
-        composable("swimmingRecord/{date}") { backStackEntry ->
+        composable("swimmingRecord/{date}", enterTransition = { EnterTransition.None }, exitTransition = { ExitTransition.None }) { backStackEntry ->
             val date = LocalDate.parse(backStackEntry.arguments?.getString("date"))
             SwimmingRecordScreen(
                 date = date,
-                onBack = { navController.popBackStack() },
+                onBack = {
+                    navController.navigate("calendar") {
+                        popUpTo(navController.graph.startDestinationId) { inclusive = true }
+                    }
+                },
                 onAddRecord = { navController.navigate("addRecord/$date") },
                 viewModel = swimmingRecordViewModel,
+                navController = navController
             )
         }
         composable("addRecord/{date}") { backStackEntry ->
@@ -144,4 +152,3 @@ fun AppNavigator() {
         }
     }
 }
-

@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.CircleShape
@@ -36,10 +37,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import java.time.LocalDate
-import java.time.YearMonth
+import com.example.syeongboard.test.StackedBars
 import com.example.syeongboard.utils.MyColor
 import kotlinx.datetime.DayOfWeek
+import java.time.LocalDate
+import java.time.YearMonth
 import java.time.temporal.TemporalAdjusters
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -56,28 +58,23 @@ fun CalendarHeader(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
+        // Section 1 : Setting Button
         Text(
-            text = "기록",
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Bold
+            text = "이번 달 Jinwon 의 수영 기록",
+            fontSize = 16.sp,
+            color = Color.Gray
         )
         IconButton(onClick = onShowSettings) {
             Icon(Icons.Default.Settings, contentDescription = "설정")
         }
     }
-
-    val userId = "Jinwon"
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(
-            text = "이번 달 $userId 의 수영 기록",
-            fontSize = 18.sp,
-            fontWeight = FontWeight.Bold
-        )
-        Spacer(modifier = Modifier.height(4.dp))
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
         Text(
             text = "${yearMonth.year}년 ${yearMonth.monthValue}월",
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Bold
+            fontSize = 40.sp,
+            fontWeight = FontWeight.Bold,
         )
     }
 
@@ -153,7 +150,9 @@ fun WeekGrid(
     val daysOfWeek = (0..6).map { startOfWeek.plusDays(it.toLong()) }
 
     Row(
-        modifier = Modifier.fillMaxWidth().padding(16.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp) // 간격 추가
     ) {
         daysOfWeek.forEach { date ->
@@ -174,6 +173,8 @@ fun WeekGrid(
         }
     }
 }
+
+// DayCell.kt
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -221,22 +222,20 @@ fun DayCell(
         }
         Box(
             modifier = Modifier
-                .aspectRatio(1f)
+                .size(44.dp)
                 .clip(RoundedCornerShape(8.dp))
-                .background(if (isToday) MyColor.Blue else MyColor.SkyBlue)
+                .background(Color.LightGray)
                 .clickable(enabled = isClickable && onClick != null) { onClick?.invoke() },
             contentAlignment = Alignment.Center
         ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
-            ) {
-                recordsForDay.forEach { record ->
-                    Text(text = "접: ${record.butterflyDistance}m", fontSize = 8.sp)
-                    Text(text = "배: ${record.backstrokeDistance}m", fontSize = 8.sp)
-                    Text(text = "평: ${record.breaststrokeDistance}m", fontSize = 8.sp)
-                    Text(text = "자: ${record.freestyleDistance}m", fontSize = 8.sp)
-                }
+            recordsForDay.forEach { record ->
+                StackedBars(
+                    butterflyDistance = record.butterflyDistance?: 0 ,
+                    backstrokeDistance = record.backstrokeDistance?: 0,
+                    breaststrokeDistance = record.breaststrokeDistance?: 0,
+                    freestyleDistance = record.freestyleDistance?: 0,
+                    0.1f, 8, (if (isToday) Color.Gray else Color.LightGray)
+                )
             }
         }
         Spacer(modifier = Modifier.height(16.dp))
