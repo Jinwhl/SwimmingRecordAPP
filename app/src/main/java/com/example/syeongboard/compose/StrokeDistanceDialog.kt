@@ -32,19 +32,20 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
-import com.example.syeongboard.screen.myBlueColor
+import com.example.syeongboard.utils.MyColor
+
 
 @Composable
 fun StrokeDistanceDialog(
     onDismissRequest: () -> Unit,
     onConfirmation: () -> Unit,
     dialogTitle: String,
-    updateDistances: (String, String, String, String) -> Unit
+    updateDistances: (Int, Int, Int, Int) -> Unit
 ) {
-    var butterflyDistance by remember { mutableStateOf("0") }
-    var backstrokeDistance by remember { mutableStateOf("0") }
-    var breaststrokeDistance by remember { mutableStateOf("0") }
-    var freestyleDistance by remember { mutableStateOf("0") }
+    var butterflyDistance by remember { mutableStateOf(0) }
+    var backstrokeDistance by remember { mutableStateOf(0) }
+    var breaststrokeDistance by remember { mutableStateOf(0) }
+    var freestyleDistance by remember { mutableStateOf(0) }
 
     Dialog(onDismissRequest = onDismissRequest) {
         Surface(
@@ -64,19 +65,36 @@ fun StrokeDistanceDialog(
                 Divider(color = Color.LightGray, thickness = 1.dp)
                 Spacer(modifier = Modifier.height(16.dp))
 
-                DistanceInputRow(label = "접영", value = butterflyDistance) { butterflyDistance = it }
-                DistanceInputRow(label = "배영", value = backstrokeDistance) { backstrokeDistance = it }
-                DistanceInputRow(label = "평영", value = breaststrokeDistance) { breaststrokeDistance = it }
-                DistanceInputRow(label = "자유형", value = freestyleDistance) { freestyleDistance = it }
+                DistanceInputRow(
+                    label = "접영",
+                    value = butterflyDistance.toString()
+                ) { butterflyDistance = it.toIntOrNull() ?: 0 }
+                DistanceInputRow(
+                    label = "배영",
+                    value = backstrokeDistance.toString()
+                ) { backstrokeDistance = it.toIntOrNull() ?: 0 }
+                DistanceInputRow(
+                    label = "평영",
+                    value = breaststrokeDistance.toString()
+                ) { breaststrokeDistance = it.toIntOrNull() ?: 0 }
+                DistanceInputRow(
+                    label = "자유형",
+                    value = freestyleDistance.toString()
+                ) { freestyleDistance = it.toIntOrNull() ?: 0 }
 
                 Spacer(modifier = Modifier.height(16.dp))
 
                 Button(
                     onClick = {
                         onConfirmation()
-                        updateDistances(butterflyDistance, backstrokeDistance, breaststrokeDistance, freestyleDistance)
+                        updateDistances(
+                            butterflyDistance,
+                            backstrokeDistance,
+                            breaststrokeDistance,
+                            freestyleDistance
+                        )
                     },
-                    colors = ButtonDefaults.buttonColors(myBlueColor),
+                    colors = ButtonDefaults.buttonColors(MyColor.Blue),
                     shape = RoundedCornerShape(8.dp),
                     modifier = Modifier.fillMaxWidth(),
                 ) {

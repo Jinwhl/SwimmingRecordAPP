@@ -9,44 +9,35 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.syeongboard.screen.myBlueColor
+import com.example.syeongboard.utils.MyColor
 import java.util.Calendar
 
 @Composable
-fun TimePicker(onTimeSet: (Boolean, Int, Int, Int, Int) -> Unit) {
+fun TimePicker(
+    startHour: Int,
+    startMin: Int,
+    endHour: Int,
+    endMin: Int,
+    onTimeSet: (Boolean, Int, Int, Int, Int) -> Unit,
+) {
     val context = LocalContext.current
-
-    var startHour by remember { mutableStateOf(-1) }
-    var startMin by remember { mutableStateOf(-1) }
-    var endHour by remember { mutableStateOf(-1) }
-    var endMin by remember { mutableStateOf(-1) }
-
-    // When user select time, change to true
-    val isTimeSelected = startHour > 0 && endHour > 0
-    onTimeSet(isTimeSelected, startHour, startMin, endHour, endMin)
-
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier.padding(16.dp)
     ) {
         Button(
             onClick = {
-                showTimePicker(context) { hour, minute ->
-                    startHour = hour
-                    startMin = minute
+                showTimePicker(startHour, startMin, context) { hour, minute ->
+                    val isTimeSelected = hour > 0 && minute > 0 && endHour > 0 && endMin > 0
+                    onTimeSet(isTimeSelected, hour, minute, endHour, endMin)
                 }
             },
-            colors = ButtonDefaults.buttonColors(myBlueColor),
+            colors = ButtonDefaults.buttonColors(MyColor.Blue),
             shape = RoundedCornerShape(8.dp),
             modifier = Modifier.weight(1f)
         ) {
@@ -66,12 +57,12 @@ fun TimePicker(onTimeSet: (Boolean, Int, Int, Int, Int) -> Unit) {
 
         Button(
             onClick = {
-                showTimePicker(context) { hour, minute ->
-                    endHour = hour
-                    endMin = minute
+                showTimePicker(endHour, endMin, context) { hour, minute ->
+                    val isTimeSelected = startHour > 0 && startMin > 0 && hour > 0 && minute > 0
+                    onTimeSet(isTimeSelected, startHour, startMin, hour, minute)
                 }
             },
-            colors = ButtonDefaults.buttonColors(myBlueColor),
+            colors = ButtonDefaults.buttonColors(MyColor.Blue),
             shape = RoundedCornerShape(8.dp),
             modifier = Modifier.weight(1f)
         ) {
@@ -82,6 +73,7 @@ fun TimePicker(onTimeSet: (Boolean, Int, Int, Int, Int) -> Unit) {
         }
     }
 }
+
 fun convertTimeToString(hour: Int, minute: Int): String {
     return String.format(
         "%02d:%02d %s",
@@ -90,10 +82,19 @@ fun convertTimeToString(hour: Int, minute: Int): String {
         if (hour < 12) "AM" else "PM"
     )
 }
-private fun showTimePicker(context: android.content.Context, onTimeSelected: (Int, Int) -> Unit) {
-    val calendar = Calendar.getInstance()
-    val hour = calendar.get(Calendar.HOUR_OF_DAY)
-    val minute = calendar.get(Calendar.MINUTE)
+
+private fun showTimePicker(
+    prevHour: Int,
+    prevMinute: Int,
+    context: android.content.Context, onTimeSelected: (Int, Int) -> Unit,
+) {
+    val (hour, minute) = when {
+        prevHour == -1 || prevMinute == -1 -> {
+            val calendar = Calendar.getInstance()
+            calendar.get(Calendar.HOUR_OF_DAY) to calendar.get(Calendar.MINUTE)
+        }
+        else -> prevHour to prevMinute
+    }
 
     TimePickerDialog(
         context,

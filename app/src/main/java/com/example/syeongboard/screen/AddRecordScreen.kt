@@ -40,19 +40,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.syeongboard.compose.StrokeDistanceDialog
-import com.example.syeongboard.compose.SwimRecords
+import com.example.syeongboard.compose.SupabaseClient
 import com.example.syeongboard.compose.TimePicker
-import com.example.syeongboard.compose.addDataToSupabase
-import com.example.syeongboard.compose.getSwimRecordByDate
-import com.example.syeongboard.compose.supabase
-import io.github.jan.supabase.postgrest.from
-import kotlinx.coroutines.Dispatchers
+import com.example.syeongboard.utils.MyColor
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.time.LocalDate
-
-val myBlueColor = Color(0xFF3382F5)
-val mySkyColor = Color(0xFFB4CDFB)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -61,41 +53,35 @@ fun AddRecordScreen(
     onBack: () -> Unit,
     onSave: (Int, Int, Int, Int, Map<String, Int>) -> Unit
 ) {
-    val myBlueColor = Color(0xFF3382F5)
-    val mySkyColor = Color(0xFFB4CDFB)
-
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
     val scope = rememberCoroutineScope()
 
-    var startHour by remember { mutableIntStateOf(0) }
-    var startMin by remember { mutableIntStateOf(0) }
-    var endHour by remember { mutableIntStateOf(0) }
-    var endMin by remember { mutableIntStateOf(0) }
-    var butterflyDistance by remember { mutableStateOf("0") }
-    var backstrokeDistance by remember { mutableStateOf("0") }
-    var breaststrokeDistance by remember { mutableStateOf("0") }
-    var freestyleDistance by remember { mutableStateOf("0") }
+    var startHour by remember { mutableIntStateOf(-1) }
+    var startMin by remember { mutableIntStateOf(-1) }
+    var endHour by remember { mutableIntStateOf(-1) }
+    var endMin by remember { mutableIntStateOf(-1) }
+    var butterflyDistance by remember { mutableStateOf(0) }
+    var backstrokeDistance by remember { mutableStateOf(0) }
+    var breaststrokeDistance by remember { mutableStateOf(0) }
+    var freestyleDistance by remember { mutableStateOf(0) }
     var poolName by remember { mutableStateOf<String?>(null) }
     var notes by remember { mutableStateOf<String?>(null) }
 
-//    LaunchedEffect(date) {
-//        println("Fetching record for date: $date")
-//
-//        val record = getSwimRecordByDate(date.toString())
-//        record?.let {
-//            println("Record found: $it")
-//            startHour = it.startTime.substringBefore(":").toInt()
-//            startMin = it.startTime.substringAfter(":").toInt()
-//            endHour = it.endTime.substringBefore(":").toInt()
-//            endMin = it.endTime.substringAfter(":").toInt()
-//            butterflyDistance = it.butterflyDistance.toString()
-//            backstrokeDistance = it.backstrokeDistance.toString()
-//            breaststrokeDistance = it.breaststrokeDistance.toString()
-//            freestyleDistance = it.freestyleDistance.toString()
+    LaunchedEffect(date) {
+        val record = SupabaseClient.getSwimRecordByDate(date.toString())
+        record?.let {
+            startHour = it.startTime.substringBefore(":").toInt()
+            startMin = it.startTime.substringAfter(":").toInt()
+            endHour = it.endTime.substringBefore(":").toInt()
+            endMin = it.endTime.substringAfter(":").toInt()
+            butterflyDistance = it.butterflyDistance ?: 0
+            backstrokeDistance = it.backstrokeDistance ?: 0
+            breaststrokeDistance = it.breaststrokeDistance ?: 0
+            freestyleDistance = it.freestyleDistance ?: 0
 //            poolName = it.poolName
 //            notes = it.notes
-//        }
-//    }
+        }
+    }
 
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
@@ -130,7 +116,7 @@ fun AddRecordScreen(
                 Spacer(modifier = Modifier.weight(1f))
                 Button(
                     onClick = { },
-                    colors = ButtonDefaults.buttonColors(mySkyColor),
+                    colors = ButtonDefaults.buttonColors(MyColor.SkyBlue),
                     shape = RoundedCornerShape(8.dp),
                 ) {
                     Text(date.toString())
@@ -142,7 +128,12 @@ fun AddRecordScreen(
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(text = "수영 시간*", fontSize = 16.sp, color = Color.Gray)
                 Spacer(modifier = Modifier.weight(1f))
-                TimePicker(onTimeSet = { enabled, inputStartHour, inputStartMin, inputEndHour, inputEndMin ->
+                TimePicker(
+                    startHour,
+                    startMin,
+                    endHour,
+                    endMin,
+                    onTimeSet = { enabled, inputStartHour, inputStartMin, inputEndHour, inputEndMin ->
                     isTimeSelected = enabled
                     startHour = inputStartHour
                     startMin = inputStartMin
@@ -154,17 +145,17 @@ fun AddRecordScreen(
             // Section 3 : Record Distances of Each Stroke (Essential Data *)
             var isDistanceSelected by remember { mutableStateOf(false) }
             fun updateDistances(
-                butterfly: String,
-                backstroke: String,
-                breaststroke: String,
-                freestyle: String
+                butterfly: Int,
+                backstroke: Int,
+                breaststroke: Int,
+                freestyle: Int
             ) {
                 butterflyDistance = butterfly
                 backstrokeDistance = backstroke
                 breaststrokeDistance = breaststroke
                 freestyleDistance = freestyle
                 isDistanceSelected = listOf(butterfly, backstroke, breaststroke, freestyle).any {
-                    (it.toIntOrNull() ?: 0) > 0
+                    (it) > 0
                 }
             }
             Spacer(modifier = Modifier.height(8.dp))
@@ -182,7 +173,7 @@ fun AddRecordScreen(
                 }
                 Button(
                     onClick = { showDialog = true },
-                    colors = ButtonDefaults.buttonColors(myBlueColor),
+                    colors = ButtonDefaults.buttonColors(MyColor.Blue),
                     shape = RoundedCornerShape(8.dp),
                 ) {
                     Text("거리 입력")
@@ -206,7 +197,7 @@ fun AddRecordScreen(
                 value = notes ?: "",
                 onValueChange = { notes = it.ifBlank { null } },
                 placeholder = { Text(text = "오늘 수영은 어땠나요?") },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth().height(240.dp)
             )
 
             // Section 6 : Save Button
@@ -215,14 +206,14 @@ fun AddRecordScreen(
             Button(
                 onClick = {
                     val distances = mapOf(
-                        "butterfly" to (butterflyDistance.toIntOrNull() ?: 0),
-                        "backstroke" to (backstrokeDistance.toIntOrNull() ?: 0),
-                        "breaststroke" to (breaststrokeDistance.toIntOrNull() ?: 0),
-                        "freestyle" to (freestyleDistance.toIntOrNull() ?: 0)
+                        "butterfly" to (butterflyDistance),
+                        "backstroke" to (backstrokeDistance),
+                        "breaststroke" to (breaststrokeDistance),
+                        "freestyle" to (freestyleDistance)
                     )
                     onSave(startHour, startMin, endHour, endMin, distances)
                     scope.launch {
-                        addDataToSupabase(
+                        SupabaseClient.addDataToSupabase(
                             swimDate = date.toString(),
                             startTime = "$startHour:$startMin",
                             endTime = "$endHour:$endMin",
@@ -232,7 +223,7 @@ fun AddRecordScreen(
                         )
                     }
                 },
-                colors = ButtonDefaults.buttonColors(if (isButtonEnabled) myBlueColor else mySkyColor),
+                colors = ButtonDefaults.buttonColors(if (isButtonEnabled) MyColor.Blue else MyColor.SkyBlue),
                 enabled = isButtonEnabled,
                 shape = RoundedCornerShape(8.dp),
                 modifier = Modifier

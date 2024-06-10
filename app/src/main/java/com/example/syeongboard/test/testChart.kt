@@ -20,17 +20,18 @@ import androidx.compose.ui.unit.sp
 
 @Composable
 fun BarChart(
-    barData: List<Pair<String, Float>>, // Pair of label and value
+    barData: List<Pair<String, Int?>>, // Pair of label and value
     colors: List<Color>, // List of colors for the bars
     modifier: Modifier = Modifier
 ) {
-    val maxValue = barData.maxOf { it.second }
+    // Filter out null values and find max value from non-null values
+    val maxValue = barData.mapNotNull { it.second }.maxOrNull()?.toFloat() ?: 1f
 
     Column(modifier = modifier.padding(16.dp)) {
         // Display each bar
         barData.forEachIndexed { index, data ->
             val label = data.first
-            val value = data.second
+            val value = data.second ?: 0 // Use 0 if the value is null
             val percentage = value / maxValue
             val barColor = colors.getOrElse(index) { Color.Gray } // Default to gray if not enough colors
 
@@ -45,9 +46,9 @@ fun BarChart(
                         size = Size(this.size.width * percentage, this.size.height)
                     )
                     drawContext.canvas.nativeCanvas.apply {
-                        val text = "$label ${value.toInt()}m"
+                        val text = "$label ${value}m"
                         val paint = Paint().asFrameworkPaint().apply {
-                            var isAntiAlias = true
+                            isAntiAlias = true
                             textSize = 8.sp.toPx()
                             color = android.graphics.Color.WHITE // Text color
                         }
@@ -59,21 +60,19 @@ fun BarChart(
                         )
                     }
                 }
-
             }
             Spacer(modifier = Modifier.height(8.dp))
         }
     }
 }
-
 @Preview(showBackground = true)
 @Composable
 fun PreviewBarChart() {
     val sampleData = listOf(
-        "접" to 400f,
-        "배" to 100f,
-        "평" to 400f,
-        "자" to 200f,
+        "접" to 400,
+        "배" to 100,
+        "평" to 400,
+        "자" to 200,
     )
     val colors = listOf(
         Color(0xFF3382F5), // Blue
