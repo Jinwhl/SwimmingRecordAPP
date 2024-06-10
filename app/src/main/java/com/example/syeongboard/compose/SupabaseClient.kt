@@ -25,7 +25,7 @@ object SupabaseClient {
         val breaststrokeDistance: Int?,
         val freestyleDistance: Int?,
         var poolName: String? = null,
-        val notes: String? = null,
+        var notes: String? = null,
     )
 
     suspend fun addDataToSupabase(

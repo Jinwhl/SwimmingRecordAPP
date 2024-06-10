@@ -39,6 +39,7 @@ import androidx.compose.ui.unit.sp
 import com.example.syeongboard.compose.SupabaseClient
 import com.example.syeongboard.compose.SwimmingRecordViewModel
 import com.example.syeongboard.compose.WeekDaysRow
+import com.example.syeongboard.compose.WeekGrid
 import com.example.syeongboard.test.BarChart
 import com.example.syeongboard.utils.MyColor
 import java.time.LocalDate
@@ -82,10 +83,16 @@ fun SwimmingRecordScreen(
         ) {
             // Section 1 : Mon ~ Sun
             WeekDaysRow()
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(4.dp))
 
             // Section 2 : Grid for One week
-            // TODO
+            WeekGrid(
+                selectedDate = date,
+                today = LocalDate.now(),
+                onDateSelected = { selectedDate -> viewModel.fetchSwimRecordsByDate(selectedDate) },
+                filteredSwimRecords = viewModel.swimRecords.value ?: emptyList()
+            )
+            Spacer(modifier = Modifier.height(16.dp))
 
             // Section 3 : Title
             val userID = "Jinwon"
@@ -96,7 +103,7 @@ fun SwimmingRecordScreen(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(320.dp)
+                    .height(400.dp)
                     .background(Color.LightGray)
             ) {
                 Column(
@@ -136,18 +143,13 @@ fun RecordInfo(data: SupabaseClient.SwimRecord) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        val sampleData = listOf(
-            "접" to data.butterflyDistance,
-            "배" to data.backstrokeDistance,
-            "평" to data.breaststrokeDistance,
-            "자" to data.freestyleDistance,
+        BarChart(
+            barData = listOf("접" to data.butterflyDistance, "배" to data.backstrokeDistance, "평" to data.breaststrokeDistance, "자" to data.freestyleDistance),
+            colors = listOf(MyColor.Blue, MyColor.SkyBlue, MyColor.Orange, MyColor.Green)
         )
-        val colors = listOf(
-            MyColor.Blue,
-            MyColor.SkyBlue,
-            MyColor.Orange,
-            MyColor.Green,
-        )
-        BarChart(barData = sampleData, colors = colors)
+        Text(text = "Start Time >> ${data.startTime}")
+        Text(text = "End Time >> ${data.endTime}")
+        Text(text = "Pool >> ${data.poolName}")
+        Text(text = "Notes \n ${data.notes}")
     }
 }

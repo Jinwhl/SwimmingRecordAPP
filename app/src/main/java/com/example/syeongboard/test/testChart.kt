@@ -24,7 +24,6 @@ fun BarChart(
     colors: List<Color>, // List of colors for the bars
     modifier: Modifier = Modifier
 ) {
-    // Filter out null values and find max value from non-null values
     val maxValue = barData.mapNotNull { it.second }.maxOrNull()?.toFloat() ?: 1f
 
     Column(modifier = modifier.padding(16.dp)) {

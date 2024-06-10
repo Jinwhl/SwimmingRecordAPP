@@ -79,24 +79,28 @@ fun AppNavigator() {
     NavHost(
         navController = navController, startDestination = "calendar",
         enterTransition = {
-            fadeIn(
-                animationSpec = tween(
-                    300, easing = LinearEasing
-                )
-            ) + slideIntoContainer(
-                animationSpec = tween(300, easing = EaseIn),
-                towards = AnimatedContentTransitionScope.SlideDirection.Start
-            )
+            slideIntoContainer(
+                animationSpec = tween(300),
+                towards = AnimatedContentTransitionScope.SlideDirection.Left
+            ) + fadeIn(animationSpec = tween(300))
         },
         exitTransition = {
-            fadeOut(
-                animationSpec = tween(
-                    300, easing = LinearEasing
-                )
-            ) + slideOutOfContainer(
-                animationSpec = tween(300, easing = EaseOut),
-                towards = AnimatedContentTransitionScope.SlideDirection.End
-            )
+            slideOutOfContainer(
+                animationSpec = tween(300),
+                towards = AnimatedContentTransitionScope.SlideDirection.Left
+            ) + fadeOut(animationSpec = tween(300))
+        },
+        popEnterTransition = {
+            slideIntoContainer(
+                animationSpec = tween(300),
+                towards = AnimatedContentTransitionScope.SlideDirection.Right
+            ) + fadeIn(animationSpec = tween(300))
+        },
+        popExitTransition = {
+            slideOutOfContainer(
+                animationSpec = tween(300),
+                towards = AnimatedContentTransitionScope.SlideDirection.Right
+            ) + fadeOut(animationSpec = tween(300))
         }
     ) {
         composable("calendar") {

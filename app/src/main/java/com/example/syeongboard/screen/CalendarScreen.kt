@@ -14,7 +14,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.syeongboard.compose.CalendarGrid
+import com.example.syeongboard.compose.MonthGrid
 import com.example.syeongboard.compose.CalendarHeader
 import com.example.syeongboard.compose.SupabaseClient
 import com.example.syeongboard.compose.WeekDaysRow
@@ -53,7 +53,7 @@ fun CalendarScreen(
         Spacer(modifier = Modifier.height(8.dp))
         WeekDaysRow()
         Spacer(modifier = Modifier.height(8.dp))
-        CalendarGrid(
+        MonthGrid(
             currentYearMonth = currentYearMonth,
             daysInMonth = daysInMonth,
             firstDayOfMonth = firstDayOfMonth,

@@ -36,10 +36,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.syeongboard.test.BarChart
 import java.time.LocalDate
 import java.time.YearMonth
 import com.example.syeongboard.utils.MyColor
+import kotlinx.datetime.DayOfWeek
+import java.time.temporal.TemporalAdjusters
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -99,7 +100,7 @@ fun CalendarHeader(
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun CalendarGrid(
+fun MonthGrid(
     currentYearMonth: YearMonth,
     daysInMonth: Int,
     firstDayOfMonth: Int,
@@ -123,7 +124,7 @@ fun CalendarGrid(
                 val isToday = date == today
                 val isClickable = !date.isAfter(today)
                 DayCell(
-                    today = date,
+                    date = date,
                     isToday = isToday,
                     isClickable = isClickable,
                     onClick = { onDateSelected(date) },
@@ -139,16 +140,49 @@ fun CalendarGrid(
         }
     }
 }
+
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun DayCell(
+fun WeekGrid(
+    selectedDate: LocalDate,
     today: LocalDate,
+    onDateSelected: (LocalDate) -> Unit,
+    filteredSwimRecords: List<SupabaseClient.SwimRecord>
+) {
+    val startOfWeek = selectedDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY))
+    val daysOfWeek = (0..6).map { startOfWeek.plusDays(it.toLong()) }
+
+    Row(
+        modifier = Modifier.fillMaxWidth().padding(16.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp) // 간격 추가
+    ) {
+        daysOfWeek.forEach { date ->
+            val isToday = date == today
+            val isClickable = !date.isAfter(today)
+            Box(
+                modifier = Modifier.weight(1f),
+                contentAlignment = Alignment.Center
+            ) {
+                DayCell(
+                    date = date,
+                    isToday = isToday,
+                    isClickable = isClickable,
+                    onClick = { onDateSelected(date) },
+                    filteredSwimRecords = filteredSwimRecords
+                )
+            }
+        }
+    }
+}@RequiresApi(Build.VERSION_CODES.O)
+@Composable
+fun DayCell(
+    date: LocalDate,
     isToday: Boolean,
     isClickable: Boolean,
     onClick: (() -> Unit)?,
     filteredSwimRecords: List<SupabaseClient.SwimRecord>
 ) {
-    val recordsForDay = filteredSwimRecords.filter { it.swimDate == today.toString() }
+    val recordsForDay = filteredSwimRecords.filter { it.swimDate == date.toString() }
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -158,13 +192,13 @@ fun DayCell(
             Spacer(modifier = Modifier.height(4.dp))
             Box(
                 modifier = Modifier
-                    .size(16.dp)
+                    .size(18.dp)
                     .clip(CircleShape)
-                    .background(Color.Gray),
+                    .background(MyColor.Blue),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = today.dayOfMonth.toString(),
+                    text = date.dayOfMonth.toString(),
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.White,
@@ -175,7 +209,7 @@ fun DayCell(
         } else {
             Spacer(modifier = Modifier.height(4.dp))
             Text(
-                text = today.dayOfMonth.toString(),
+                text = date.dayOfMonth.toString(),
                 fontSize = 12.sp,
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center,
