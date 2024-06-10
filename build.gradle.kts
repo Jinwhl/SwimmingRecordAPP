@@ -3,3 +3,13 @@ plugins {
     alias(libs.plugins.android.application) apply false
     alias(libs.plugins.jetbrains.kotlin.android) apply false
 }
+
+buildscript {
+    repositories {
+        // maven { url("https://maven.google.com") } for Gradle <= 3
+        google()
+    }
+    dependencies {
+        classpath("com.google.android.gms:oss-licenses-plugin:0.10.6")
+    }
+}

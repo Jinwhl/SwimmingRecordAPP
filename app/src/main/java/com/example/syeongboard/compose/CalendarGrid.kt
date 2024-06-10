@@ -122,11 +122,11 @@ fun MonthGrid(
                 val day = days[index - firstDayOfMonth]
                 val date = LocalDate.of(currentYearMonth.year, currentYearMonth.month, day.toInt())
                 val isToday = date == today
-                val isClickable = !date.isAfter(today)
+
                 DayCell(
                     date = date,
                     isToday = isToday,
-                    isClickable = isClickable,
+                    isClickable = !date.isAfter(today),
                     onClick = { onDateSelected(date) },
                     filteredSwimRecords = filteredSwimRecords
                 )
@@ -158,7 +158,7 @@ fun WeekGrid(
     ) {
         daysOfWeek.forEach { date ->
             val isToday = date == today
-            val isClickable = !date.isAfter(today)
+
             Box(
                 modifier = Modifier.weight(1f),
                 contentAlignment = Alignment.Center
@@ -166,14 +166,16 @@ fun WeekGrid(
                 DayCell(
                     date = date,
                     isToday = isToday,
-                    isClickable = isClickable,
+                    isClickable = !date.isAfter(today),
                     onClick = { onDateSelected(date) },
                     filteredSwimRecords = filteredSwimRecords
                 )
             }
         }
     }
-}@RequiresApi(Build.VERSION_CODES.O)
+}
+
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun DayCell(
     date: LocalDate,
@@ -222,9 +224,7 @@ fun DayCell(
                 .aspectRatio(1f)
                 .clip(RoundedCornerShape(8.dp))
                 .background(if (isToday) MyColor.Blue else MyColor.SkyBlue)
-                .clickable(enabled = isClickable && onClick != null) {
-                    onClick?.invoke()
-                },
+                .clickable(enabled = isClickable && onClick != null) { onClick?.invoke() },
             contentAlignment = Alignment.Center
         ) {
             Column(

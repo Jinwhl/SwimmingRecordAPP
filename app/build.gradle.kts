@@ -3,6 +3,7 @@ import java.util.Properties
 
 plugins {
     alias(libs.plugins.android.application)
+    id("com.google.android.gms.oss-licenses-plugin")
     alias(libs.plugins.jetbrains.kotlin.android)
 
     kotlin("plugin.serialization") version "1.9.0"
@@ -87,4 +88,7 @@ dependencies {
 
     implementation("androidx.credentials:credentials:1.2.2")
     implementation ("com.google.android.libraries.identity.googleid:googleid:1.1.0")
+
+    implementation("com.google.android.gms:play-services-oss-licenses:17.0.1")
+
 }

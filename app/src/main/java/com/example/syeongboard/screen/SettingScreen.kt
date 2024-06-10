@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material3.Button
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -22,6 +23,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import android.content.Intent
+import androidx.compose.ui.platform.LocalContext
+import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 
 @Composable
 fun SettingsScreen(onClose: () -> Unit) {
@@ -45,6 +49,16 @@ fun SettingsScreen(onClose: () -> Unit) {
             }
         }
         Divider()
+
+        // OSS License Button
+        val context = LocalContext.current
+        Button(
+            onClick = { context.startActivity(Intent(context, OssLicensesMenuActivity::class.java)) },
+            modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp)
+        ) {
+            Text("오픈 소스 라이선스 보기")
+        }
+
         Spacer(modifier = Modifier.height(16.dp))
         Text(text = "거리 보기", fontSize = 16.sp, fontWeight = FontWeight.Bold)
         Row(
