@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.CircleShape
@@ -37,7 +36,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.syeongboard.test.StackedBars
+import com.example.syeongboard.test.SwimArchiveBars
 import com.example.syeongboard.utils.MyColor
 import kotlinx.datetime.DayOfWeek
 import java.time.LocalDate
@@ -229,12 +228,15 @@ fun DayCell(
             contentAlignment = Alignment.Center
         ) {
             recordsForDay.forEach { record ->
-                StackedBars(
-                    butterflyDistance = record.butterflyDistance?: 0 ,
-                    backstrokeDistance = record.backstrokeDistance?: 0,
-                    breaststrokeDistance = record.breaststrokeDistance?: 0,
-                    freestyleDistance = record.freestyleDistance?: 0,
-                    0.1f, 8, (if (isToday) Color.Gray else Color.LightGray)
+                SwimArchiveBars(
+                    record.butterflyDistance?: 0 ,
+                    record.backstrokeDistance?: 0,
+                    record.breaststrokeDistance?: 0,
+                    record.freestyleDistance?: 0,
+                    0.1f,
+                    8,
+                    (if (isToday) Color.Gray else Color.LightGray),
+                    440, 88, false
                 )
             }
         }

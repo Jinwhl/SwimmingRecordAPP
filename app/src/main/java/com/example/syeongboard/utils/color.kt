@@ -6,4 +6,5 @@ object MyColor {
     val SkyBlue: Color = Color(0xFFB4CDFB)
     val Orange: Color = Color(0xFFFFA900)
     val Green: Color = Color(0xFF22D081)
+    val Gray: Color = Color(0xF4F4F4FF)
 }

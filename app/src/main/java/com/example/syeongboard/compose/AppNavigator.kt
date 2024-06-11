@@ -123,7 +123,7 @@ fun AppNavigator() {
         composable("settings") {
             SettingsScreen(onClose = { navController.popBackStack() })
         }
-        composable("swimmingRecord/{date}", enterTransition = { EnterTransition.None }, exitTransition = { ExitTransition.None }) { backStackEntry ->
+        composable("swimmingRecord/{date}") { backStackEntry ->
             val date = LocalDate.parse(backStackEntry.arguments?.getString("date"))
             SwimmingRecordScreen(
                 date = date,
