@@ -12,9 +12,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -23,7 +21,6 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
-import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -37,7 +34,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.TextStyle
@@ -45,16 +41,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.syeongboard.compose.LottieSwimAnimation
 import com.example.syeongboard.compose.SupabaseClient
 import com.example.syeongboard.compose.SwimmingRecordViewModel
 import com.example.syeongboard.compose.WeekDaysRow
 import com.example.syeongboard.compose.WeekGrid
-import com.example.syeongboard.test.SwimArchiveBars
+import com.example.syeongboard.compose.SwimArchiveBars
 import com.example.syeongboard.utils.MyColor
-import kotlinx.datetime.LocalTime
 import java.time.LocalDate
-import java.time.format.DateTimeFormatter
-import java.time.temporal.ChronoUnit
 
 @OptIn(ExperimentalMaterial3Api::class)
 @RequiresApi(Build.VERSION_CODES.O)
@@ -121,6 +115,8 @@ fun SwimmingRecordScreen(
                     .height(600.dp),
                 contentAlignment = Alignment.TopCenter
             ) {
+                val swimRecordsByDate by viewModel.swimRecordsByDate.observeAsState(emptyMap())
+                val swimRecords = swimRecordsByDate[date] ?: emptyList()
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
@@ -132,6 +128,22 @@ fun SwimmingRecordScreen(
                         else -> Text("No swim records for this date.")
                     }
                 }
+                swimRecords.forEach { data ->
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(400.dp),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        val totalDistance = (data.butterflyDistance ?: 0) +
+                                (data.backstrokeDistance ?: 0) +
+                                (data.breaststrokeDistance ?: 0) +
+                                (data.freestyleDistance ?: 0)
+                        LottieSwimAnimation(100, (totalDistance / 50f))
+                    }
+                }
+
             }
             // Section 6 : Start Record Button
             Spacer(modifier = Modifier.height(16.dp))
@@ -165,7 +177,7 @@ fun RecordInfo(data: SupabaseClient.SwimRecord) {
         // Section 4-2 : SwimDate , Total Distance
         Box(modifier = Modifier.fillMaxWidth()) {
             Text(
-                text = data.swimDate.toString()+"   ",
+                text = data.swimDate.toString() + "   ",
                 fontSize = 16.sp,
                 color = Color.Gray,
                 modifier = Modifier.align(Alignment.TopEnd)
@@ -176,8 +188,12 @@ fun RecordInfo(data: SupabaseClient.SwimRecord) {
                     (data.freestyleDistance ?: 0)
             val totalDistanceText = convertDistanceFormat(totalDistance)
             Text(
-                text = "  "+totalDistanceText+"m",
-                style = TextStyle(fontSize = 48.sp, fontWeight = FontWeight.ExtraBold, color = Color.Black),
+                text = "  " + totalDistanceText + "m",
+                style = TextStyle(
+                    fontSize = 48.sp,
+                    fontWeight = FontWeight.ExtraBold,
+                    color = Color.Black
+                ),
                 modifier = Modifier.align(Alignment.CenterStart)
             )
         }
@@ -186,32 +202,49 @@ fun RecordInfo(data: SupabaseClient.SwimRecord) {
         // Section 4-3 : Swimming Time
         Row(
             modifier = Modifier.fillMaxWidth()
-        ){
+        ) {
             Column {
                 val timeDifferenceText = calculateTimeDifference(data.startTime, data.endTime)
                 Text(
                     text = "총 시간",
-                    style = TextStyle(fontSize = 16.sp, fontWeight = FontWeight.Bold, color = Color.Gray)
+                    style = TextStyle(
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.Gray
+                    )
                 )
                 Text(
                     text = timeDifferenceText,
-                    style = TextStyle(fontSize = 24.sp, fontWeight = FontWeight.Bold, color = Color.Black)
+                    style = TextStyle(
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.Black
+                    )
                 )
             }
             Spacer(modifier = Modifier.width(32.dp))
             Column {
                 Text(
                     text = "수영장",
-                    style = TextStyle(fontSize = 16.sp, fontWeight = FontWeight.Bold, color = Color.Gray)
+                    style = TextStyle(
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.Gray
+                    )
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 if (data.poolName != null) {
                     Text(
                         text = "${data.poolName}",
-                        style = TextStyle(fontSize = 16.sp, fontWeight = FontWeight.Bold, color = Color.Black)
+                        style = TextStyle(
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.Black
+                        )
                     )
+                } else {
+                    Text(text = "-", style = TextStyle(fontSize = 16.sp), color = Color.Gray)
                 }
-                else { Text(text = "-", style = TextStyle(fontSize = 16.sp), color = Color.Gray) }
                 Spacer(modifier = Modifier.height(4.dp))
             }
         }
@@ -220,7 +253,14 @@ fun RecordInfo(data: SupabaseClient.SwimRecord) {
         Spacer(modifier = Modifier.height(16.dp))
         Box(modifier = Modifier.fillMaxWidth()) {
             Column {
-                Text(text = "수영 일기", style = TextStyle(fontSize = 16.sp, fontWeight = FontWeight.Bold, color = Color.Gray))
+                Text(
+                    text = "수영 일기",
+                    style = TextStyle(
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.Gray
+                    )
+                )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
                     text = if (data.notes.isNullOrEmpty()) "-" else "${data.notes}",
@@ -243,6 +283,7 @@ fun convertDistanceFormat(totalDistance: Int?): String {
         "%,d".format(totalDistance)
     }
 }
+
 fun calculateTimeDifference(startTime: String, endTime: String): String {
     val start = parseTime(startTime)
     val end = parseTime(endTime)
@@ -260,6 +301,7 @@ fun calculateTimeDifference(startTime: String, endTime: String): String {
 
     return String.format("%d시간 %d분", hours, minutes)
 }
+
 fun parseTime(time: String): Pair<Int, Int> {
     val parts = time.split(":")
     val hours = parts[0].toInt()

@@ -1,4 +1,4 @@
-package com.example.syeongboard.test
+package com.example.syeongboard.compose
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box

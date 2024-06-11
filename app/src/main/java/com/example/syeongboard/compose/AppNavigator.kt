@@ -3,11 +3,6 @@ package com.example.syeongboard.compose
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedContentTransitionScope
-import androidx.compose.animation.EnterTransition
-import androidx.compose.animation.ExitTransition
-import androidx.compose.animation.core.EaseIn
-import androidx.compose.animation.core.EaseOut
-import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -15,6 +10,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -23,11 +21,9 @@ import com.example.syeongboard.screen.AddRecordScreen
 import com.example.syeongboard.screen.CalendarScreen
 import com.example.syeongboard.screen.SettingsScreen
 import com.example.syeongboard.screen.SwimmingRecordScreen
-import java.time.LocalDate
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
+import java.time.LocalDate
+
 @RequiresApi(Build.VERSION_CODES.O)
 class SwimmingRecordViewModel : ViewModel() {
     private val _startTimeMap = MutableLiveData<Map<LocalDate, Pair<Int, Int>>>(emptyMap())

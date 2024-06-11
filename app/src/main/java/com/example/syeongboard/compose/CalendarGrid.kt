@@ -37,8 +37,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.syeongboard.test.LottieTest
-import com.example.syeongboard.test.SwimArchiveBars
 import com.example.syeongboard.utils.MyColor
 import kotlinx.datetime.DayOfWeek
 import java.time.LocalDate
@@ -78,9 +76,10 @@ fun CalendarHeader(
             fontSize = 40.sp,
             fontWeight = FontWeight.Bold,
         )
+        Spacer(modifier = Modifier.width(64.dp))
         Column {
             Spacer(modifier = Modifier.height(16.dp))
-            LottieTest(112)
+            LottieSwimAnimation(112)
         }
     }
 
@@ -241,9 +240,7 @@ fun DayCell(
                     record.backstrokeDistance?: 0,
                     record.breaststrokeDistance?: 0,
                     record.freestyleDistance?: 0,
-                    0.1f,
-                    8,
-                    (if (isToday) Color.Gray else Color.LightGray),
+                    0.1f, 8, Color.LightGray,
                     440, 88, false
                 )
             }
