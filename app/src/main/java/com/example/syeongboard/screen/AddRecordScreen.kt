@@ -79,8 +79,8 @@ fun AddRecordScreen(
             backstrokeDistance = it.backstrokeDistance ?: 0
             breaststrokeDistance = it.breaststrokeDistance ?: 0
             freestyleDistance = it.freestyleDistance ?: 0
-//            poolName = it.poolName
-//            notes = it.notes
+            poolName = it.poolName
+            notes = it.notes
         }
     }
 
@@ -239,6 +239,8 @@ fun AddRecordScreen(
 
             // Section 6 : Save Button
             val isButtonEnabled = isTimeSelected && isDistanceSelected
+//            Text(text = "isTimeSelected : $isTimeSelected")
+//            Text(text = "isDistanceSelected : $isDistanceSelected")
             Spacer(modifier = Modifier.height(16.dp))
             Button(
                 onClick = {

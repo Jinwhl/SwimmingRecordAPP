@@ -76,7 +76,6 @@ fun TimePicker(
         }
     }
 }
-
 fun convertTimeToString(hour: Int, minute: Int): String {
     return String.format(
         "%02d:%02d %s",
@@ -106,6 +105,6 @@ private fun showTimePicker(
         },
         hour,
         minute,
-        false  // 12 hours format
+        true  // 12 hours format
     ).show()
 }

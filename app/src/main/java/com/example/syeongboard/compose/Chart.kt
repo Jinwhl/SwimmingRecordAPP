@@ -91,7 +91,3 @@ fun SwimArchiveBars(
     }
     Spacer(modifier = Modifier.height(16.dp))
 }
-
-
-
-
