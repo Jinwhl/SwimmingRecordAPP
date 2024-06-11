@@ -91,4 +91,6 @@ dependencies {
 
     implementation("com.google.android.gms:play-services-oss-licenses:17.0.1")
 
+    val lottieVersion = "6.4.1"
+    implementation("com.airbnb.android:lottie-compose:$lottieVersion")
 }

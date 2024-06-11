@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.CircleShape
@@ -36,6 +37,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.syeongboard.test.LottieTest
 import com.example.syeongboard.test.SwimArchiveBars
 import com.example.syeongboard.utils.MyColor
 import kotlinx.datetime.DayOfWeek
@@ -67,14 +69,19 @@ fun CalendarHeader(
             Icon(Icons.Default.Settings, contentDescription = "설정")
         }
     }
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
             text = "${yearMonth.year}년 ${yearMonth.monthValue}월",
             fontSize = 40.sp,
             fontWeight = FontWeight.Bold,
         )
+        Column {
+            Spacer(modifier = Modifier.height(16.dp))
+            LottieTest(112)
+        }
     }
 
     Row(
@@ -194,7 +201,7 @@ fun DayCell(
             Spacer(modifier = Modifier.height(4.dp))
             Box(
                 modifier = Modifier
-                    .size(18.dp)
+                    .size(20.dp)
                     .clip(CircleShape)
                     .background(MyColor.Blue),
                 contentAlignment = Alignment.Center
@@ -204,10 +211,11 @@ fun DayCell(
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.White,
-                    textAlign = TextAlign.Center
                 )
+                Spacer(modifier = Modifier.height(4.dp))
             }
-            Spacer(modifier = Modifier.height(4.dp))
+            Spacer(modifier = Modifier.height(8.dp))
+
         } else {
             Spacer(modifier = Modifier.height(4.dp))
             Text(

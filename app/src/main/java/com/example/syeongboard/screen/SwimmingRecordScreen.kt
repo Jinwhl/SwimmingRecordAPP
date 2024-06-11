@@ -258,7 +258,7 @@ fun calculateTimeDifference(startTime: String, endTime: String): String {
     val hours = difference / 60
     val minutes = difference % 60
 
-    return String.format("%d시간%d분", hours, minutes)
+    return String.format("%d시간 %d분", hours, minutes)
 }
 fun parseTime(time: String): Pair<Int, Int> {
     val parts = time.split(":")

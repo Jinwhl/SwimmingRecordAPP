@@ -88,7 +88,6 @@ fun GoogleSignInButton() {
             }
         }
     }
-
     Button(
         onClick = onClick,
     ) {
