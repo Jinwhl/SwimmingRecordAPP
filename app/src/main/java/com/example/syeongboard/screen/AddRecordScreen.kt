@@ -12,16 +12,17 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
@@ -90,13 +91,13 @@ fun AddRecordScreen(
                 title = {
                     Text(
                         text = "수영 기록 추가하기",
-                        fontSize = 16.sp,
+                        fontSize = 24.sp,
                         fontWeight = FontWeight.Bold,
                     )
                 },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
                 },
                 scrollBehavior = scrollBehavior,
@@ -112,7 +113,12 @@ fun AddRecordScreen(
         ) {
             // Section 1 : Show Date (Essential Data *)
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(text = "수영 날짜*", fontSize = 16.sp, color = Color.Gray)
+                Text(
+                    text = "수영 날짜*",
+                    fontSize = 16.sp,
+                    color = Color.Gray,
+                    fontWeight = FontWeight.Bold
+                )
                 Spacer(modifier = Modifier.weight(1f))
                 Button(
                     onClick = { },
@@ -122,11 +128,17 @@ fun AddRecordScreen(
                     Text(date.toString())
                 }
             }
+            Spacer(modifier = Modifier.height(16.dp))
 
             // Section 2 : Record Swimming Start & End Time (Essential Data *)
             var isTimeSelected by remember { mutableStateOf(false) }
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(text = "수영 시간*", fontSize = 16.sp, color = Color.Gray)
+                Text(
+                    text = "수영 시간*",
+                    fontSize = 16.sp,
+                    color = Color.Gray,
+                    fontWeight = FontWeight.Bold
+                )
                 Spacer(modifier = Modifier.weight(1f))
                 TimePicker(
                     startHour,
@@ -134,13 +146,14 @@ fun AddRecordScreen(
                     endHour,
                     endMin,
                     onTimeSet = { enabled, inputStartHour, inputStartMin, inputEndHour, inputEndMin ->
-                    isTimeSelected = enabled
-                    startHour = inputStartHour
-                    startMin = inputStartMin
-                    endHour = inputEndHour
-                    endMin = inputEndMin
-                })
+                        isTimeSelected = enabled
+                        startHour = inputStartHour
+                        startMin = inputStartMin
+                        endHour = inputEndHour
+                        endMin = inputEndMin
+                    })
             }
+            Spacer(modifier = Modifier.height(16.dp))
 
             // Section 3 : Record Distances of Each Stroke (Essential Data *)
             var isDistanceSelected by remember { mutableStateOf(false) }
@@ -158,9 +171,13 @@ fun AddRecordScreen(
                     (it) > 0
                 }
             }
-            Spacer(modifier = Modifier.height(8.dp))
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(text = "수영 거리* (m)", fontSize = 16.sp, color = Color.Gray)
+                Text(
+                    text = "수영 거리* (m)",
+                    fontSize = 16.sp,
+                    color = Color.Gray,
+                    fontWeight = FontWeight.Bold
+                )
                 Spacer(modifier = Modifier.weight(1f))
                 var showDialog by remember { mutableStateOf(false) }
                 if (showDialog) {
@@ -175,6 +192,9 @@ fun AddRecordScreen(
                     onClick = { showDialog = true },
                     colors = ButtonDefaults.buttonColors(MyColor.Blue),
                     shape = RoundedCornerShape(8.dp),
+                    modifier = Modifier
+                        .width(120.dp)
+                        .height(40.dp)
                 ) {
                     Text("거리 입력")
                 }
@@ -182,22 +202,39 @@ fun AddRecordScreen(
 
             // Section 4 : Record Pool Name (Optional Data)
             Spacer(modifier = Modifier.height(16.dp))
-            Text(text = "수영장 추가", fontSize = 16.sp, color = Color.Gray)
-            TextField(
+            Text(
+                text = "수영장 추가",
+                fontSize = 16.sp,
+                color = Color.Gray,
+                fontWeight = FontWeight.Bold
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            OutlinedTextField(
                 value = poolName ?: "",
                 onValueChange = { poolName = it.ifBlank { null } },
-                placeholder = { Text(text = "수영장 검색") },
-                modifier = Modifier.fillMaxWidth()
+                placeholder = { Text(text = "수영장 이름", color = Color.Gray) },
+                modifier = Modifier.fillMaxWidth(),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = MyColor.Blue,
+                    unfocusedBorderColor = MyColor.Blue,
+                )
             )
 
             // Section 5 : Daily Note (Optional Data)
             Spacer(modifier = Modifier.height(16.dp))
-            Text(text = "수영 일기", fontSize = 16.sp, color = Color.Black)
-            TextField(
+            Text(text = "수영 일기", fontSize = 16.sp, color = Color.Gray, fontWeight = FontWeight.Bold)
+            Spacer(modifier = Modifier.height(4.dp))
+            OutlinedTextField(
                 value = notes ?: "",
                 onValueChange = { notes = it.ifBlank { null } },
-                placeholder = { Text(text = "오늘 수영은 어땠나요?") },
-                modifier = Modifier.fillMaxWidth().height(240.dp)
+                placeholder = { Text(text = "오늘 수영은 어땠나요?", color = Color.Gray) },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(240.dp),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = MyColor.Blue,
+                    unfocusedBorderColor = MyColor.Blue,
+                )
             )
 
             // Section 6 : Save Button

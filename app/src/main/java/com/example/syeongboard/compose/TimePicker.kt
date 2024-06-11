@@ -3,7 +3,10 @@ package com.example.syeongboard.compose
 import android.app.TimePickerDialog
 import android.widget.TimePicker
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -28,8 +31,8 @@ fun TimePicker(
     val context = LocalContext.current
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.padding(16.dp)
     ) {
+        Spacer(modifier = Modifier.width(10.dp))
         Button(
             onClick = {
                 showTimePicker(startHour, startMin, context) { hour, minute ->
@@ -39,7 +42,7 @@ fun TimePicker(
             },
             colors = ButtonDefaults.buttonColors(MyColor.Blue),
             shape = RoundedCornerShape(8.dp),
-            modifier = Modifier.weight(1f)
+            modifier = Modifier.width(120.dp).height(40.dp)
         ) {
             when {
                 startHour > 0 -> Text(text = convertTimeToString(startHour, startMin))
@@ -64,7 +67,7 @@ fun TimePicker(
             },
             colors = ButtonDefaults.buttonColors(MyColor.Blue),
             shape = RoundedCornerShape(8.dp),
-            modifier = Modifier.weight(1f)
+            modifier = Modifier.width(120.dp).height(40.dp)
         ) {
             when {
                 endHour > 0 -> Text(text = convertTimeToString(endHour, endMin))

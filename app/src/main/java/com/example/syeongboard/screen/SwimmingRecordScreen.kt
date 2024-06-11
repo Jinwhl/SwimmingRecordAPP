@@ -1,6 +1,7 @@
 package com.example.syeongboard.screen
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -34,6 +36,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.TextStyle
@@ -125,14 +128,12 @@ fun SwimmingRecordScreen(
                     val swimRecords = swimRecordsByDate[date] ?: emptyList()
                     when {
                         swimRecords.isNotEmpty() -> swimRecords.forEach { RecordInfo(it) }
-                        else -> Text("No swim records for this date.")
+                        else -> NoRecordInfo(selectedDate = date)
                     }
                 }
                 swimRecords.forEach { data ->
                     Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(400.dp),
+                        modifier = Modifier.fillMaxWidth(),
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
@@ -140,14 +141,12 @@ fun SwimmingRecordScreen(
                                 (data.backstrokeDistance ?: 0) +
                                 (data.breaststrokeDistance ?: 0) +
                                 (data.freestyleDistance ?: 0)
-                        LottieSwimAnimation(100, (totalDistance / 50f))
+                        LottieSwimAnimation(300, (totalDistance / 50f))
                     }
                 }
 
             }
-            // Section 6 : Start Record Button
-            Spacer(modifier = Modifier.height(16.dp))
-
+            // Section 5 : Start Record Button
             Button(
                 onClick = { onAddRecord(date) },
                 modifier = Modifier.fillMaxWidth(),
@@ -243,7 +242,7 @@ fun RecordInfo(data: SupabaseClient.SwimRecord) {
                         )
                     )
                 } else {
-                    Text(text = "-", style = TextStyle(fontSize = 16.sp), color = Color.Gray)
+                    Text(text = " - ", style = TextStyle(fontSize = 24.sp, fontWeight = FontWeight.Bold), color = Color.Gray)
                 }
                 Spacer(modifier = Modifier.height(4.dp))
             }
@@ -262,16 +261,111 @@ fun RecordInfo(data: SupabaseClient.SwimRecord) {
                     )
                 )
                 Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    text = if (data.notes.isNullOrEmpty()) "-" else "${data.notes}",
-                    style = TextStyle(fontSize = 16.sp)
-                )
+                Log.d("DailyNotesSection", "Notes: ${data.notes}")
+                if (data.notes.isNullOrEmpty()) {
+                    Text(text = " - ", style = TextStyle(fontSize = 24.sp, fontWeight = FontWeight.Bold), color = Color.Gray)
+                } else {
+                    Text(
+                        text = "${data.notes}",
+                        style = TextStyle(
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.Black
+                        )
+                    )
+                }
             }
         }
 
         Spacer(modifier = Modifier.height(8.dp))
-
     }
+}
+@Composable
+fun NoRecordInfo(selectedDate:LocalDate) {
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .size(240.dp)
+                .clip(RoundedCornerShape(32.dp))
+                .background(MyColor.Gray)
+        ) {
+            Text(text = "수영 데이터 없음", color = Color.Gray, modifier = Modifier.align(Alignment.Center))
+        }
+        // Section 4-2 : SwimDate , Total Distance
+        Box(modifier = Modifier.fillMaxWidth()) {
+            Text(
+                text = "$selectedDate  ",
+                fontSize = 16.sp,
+                color = Color.Gray,
+                modifier = Modifier.align(Alignment.TopEnd)
+            )
+            Text(
+                text = "  0m",
+                style = TextStyle(
+                    fontSize = 48.sp,
+                    fontWeight = FontWeight.ExtraBold,
+                    color = Color.Black
+                ),
+                modifier = Modifier.align(Alignment.CenterStart)
+            )
+        }
+        Spacer(modifier = Modifier.height(24.dp))
+
+        // Section 4-3 : Swimming Time
+        Row(
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Column {
+                Text(
+                    text = "총 시간",
+                    style = TextStyle(
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.Gray
+                    )
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(text = " - ", style = TextStyle(fontSize = 24.sp, fontWeight = FontWeight.Bold, color = Color.Gray))
+            }
+            Spacer(modifier = Modifier.width(32.dp))
+            Column {
+                Text(
+                    text = "수영장",
+                    style = TextStyle(
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.Gray
+                    )
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(text = " - ", style = TextStyle(fontSize = 24.sp, fontWeight = FontWeight.Bold, color = Color.Gray))
+            }
+            Spacer(modifier = Modifier.height(4.dp))
+        }
+    }
+
+    // Section 4-4 : Daily Notes
+    Spacer(modifier = Modifier.height(16.dp))
+    Box(modifier = Modifier.fillMaxWidth()) {
+        Column {
+            Text(
+                text = "수영 일기",
+                style = TextStyle(
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Gray
+                )
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(text = " - ", style = TextStyle(fontSize = 24.sp, fontWeight = FontWeight.Bold, color = Color.Gray))
+        }
+    }
+
+    Spacer(modifier = Modifier.height(8.dp))
 }
 
 fun convertDistanceFormat(totalDistance: Int?): String {

@@ -124,9 +124,7 @@ fun AppNavigator() {
             SwimmingRecordScreen(
                 date = date,
                 onBack = {
-                    navController.navigate("calendar") {
-                        popUpTo(navController.graph.startDestinationId) { inclusive = true }
-                    }
+                    navController.popBackStack("calendar", inclusive = false)
                 },
                 onAddRecord = { navController.navigate("addRecord/$date") },
                 viewModel = swimmingRecordViewModel,
